@@ -20,6 +20,8 @@ namespace KooliProjekt
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddScoped<ApplicationDbContext>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -46,6 +48,14 @@ namespace KooliProjekt
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
+
+            using (var scope = app.Services.CreateScope())
+            using (var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
+
+            {
+                context.Database.EnsureCreated();
+                SeedData.Generate(context);
+            }
 
             app.Run();
         }
