@@ -10,8 +10,13 @@ namespace KooliProjekt.Data
         [Required]
         [StringLength(50)]
         public string Specialization { get; set; }
+        
+        [StringLength(50)]
+        public string Name { get; set; }
 
         [Required]
         public int UserId { get; set; }
+
+
     }
 }
