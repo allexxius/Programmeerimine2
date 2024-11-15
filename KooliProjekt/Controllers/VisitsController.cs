@@ -9,22 +9,23 @@ using KooliProjekt.Data;
 
 namespace KooliProjekt.Controllers
 {
-    public class DoctorsController : Controller
+    public class VisitsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public DoctorsController(ApplicationDbContext context)
+        public VisitsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Doctors
+        // GET: Visits
         public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Doctors.GetPagedAsync(page, 10));
+            var applicationDbContext = _context.Visits.Include(v => v.User);
+            return View(await applicationDbContext.GetPagedAsync(page, 10));
         }
 
-        // GET: Doctors/Details/5
+        // GET: Visits/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -32,39 +33,42 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors
+            var visit = await _context.Visits
+                .Include(v => v.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (doctor == null)
+            if (visit == null)
             {
                 return NotFound();
             }
 
-            return View(doctor);
+            return View(visit);
         }
 
-        // GET: Doctors/Create
+        // GET: Visits/Create
         public IActionResult Create()
         {
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
-        // POST: Doctors/Create
+        // POST: Visits/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Specialization,UserId")] Doctor doctor)
+        public async Task<IActionResult> Create([Bind("Id,Name,UserId,DoctorId,Date,Duration")] Visit visit)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(doctor);
+                _context.Add(visit);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(doctor);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", visit.UserId);
+            return View(visit);
         }
 
-        // GET: Doctors/Edit/5
+        // GET: Visits/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -72,22 +76,23 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors.FindAsync(id);
-            if (doctor == null)
+            var visit = await _context.Visits.FindAsync(id);
+            if (visit == null)
             {
                 return NotFound();
             }
-            return View(doctor);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", visit.UserId);
+            return View(visit);
         }
 
-        // POST: Doctors/Edit/5
+        // POST: Visits/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Specialization,UserId")] Doctor doctor)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,UserId,DoctorId,Date,Duration")] Visit visit)
         {
-            if (id != doctor.Id)
+            if (id != visit.Id)
             {
                 return NotFound();
             }
@@ -96,14 +101,14 @@ namespace KooliProjekt.Controllers
             {
                 try
                 {
-                    _context.Update(doctor);
+                    _context.Update(visit);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DoctorExists(doctor.Id))
+                    if (!VisitExists(visit.Id))
                     {
-                        return NotFound(); // sosi
+                        return NotFound();
                     }
                     else
                     {
@@ -112,10 +117,11 @@ namespace KooliProjekt.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(doctor);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", visit.UserId);
+            return View(visit);
         }
 
-        // GET: Doctors/Delete/5
+        // GET: Visits/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -123,34 +129,35 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors
+            var visit = await _context.Visits
+                .Include(v => v.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (doctor == null)
+            if (visit == null)
             {
                 return NotFound();
             }
 
-            return View(doctor);
+            return View(visit);
         }
 
-        // POST: Doctors/Delete/5
+        // POST: Visits/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var doctor = await _context.Doctors.FindAsync(id);
-            if (doctor != null)
+            var visit = await _context.Visits.FindAsync(id);
+            if (visit != null)
             {
-                _context.Doctors.Remove(doctor);
+                _context.Visits.Remove(visit);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DoctorExists(int id)
+        private bool VisitExists(int id)
         {
-            return _context.Doctors.Any(e => e.Id == id);
+            return _context.Visits.Any(e => e.Id == id);
         }
     }
 }

@@ -1,7 +1,7 @@
 using KooliProjekt.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
+// a
 namespace KooliProjekt
 {
     public class Program
@@ -19,6 +19,8 @@ namespace KooliProjekt
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddScoped<ApplicationDbContext>();
 
             var app = builder.Build();
 
@@ -46,6 +48,14 @@ namespace KooliProjekt
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
+
+            using (var scope = app.Services.CreateScope())
+            using (var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
+
+            {
+                context.Database.EnsureCreated();
+                SeedData.Generate(context);
+            }
 
             app.Run();
         }

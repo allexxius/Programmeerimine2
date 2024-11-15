@@ -9,22 +9,22 @@ using KooliProjekt.Data;
 
 namespace KooliProjekt.Controllers
 {
-    public class DoctorsController : Controller
+    public class DocumentsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public DoctorsController(ApplicationDbContext context)
+        public DocumentsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Doctors
+        // GET: Documents
         public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Doctors.GetPagedAsync(page, 10));
+            return View(await _context.Documents.GetPagedAsync(page, 10));
         }
 
-        // GET: Doctors/Details/5
+        // GET: Documents/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -32,39 +32,39 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (doctor == null)
+            var document = await _context.Documents
+                .FirstOrDefaultAsync(m => m.ID == id);
+            if (document == null)
             {
                 return NotFound();
             }
 
-            return View(doctor);
+            return View(document);
         }
 
-        // GET: Doctors/Create
+        // GET: Documents/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Doctors/Create
+        // POST: Documents/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Specialization,UserId")] Doctor doctor)
+        public async Task<IActionResult> Create([Bind("ID,Type,File,Visit")] Document document)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(doctor);
+                _context.Add(document);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(doctor);
+            return View(document);
         }
 
-        // GET: Doctors/Edit/5
+        // GET: Documents/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -72,22 +72,22 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors.FindAsync(id);
-            if (doctor == null)
+            var document = await _context.Documents.FindAsync(id);
+            if (document == null)
             {
                 return NotFound();
             }
-            return View(doctor);
+            return View(document);
         }
 
-        // POST: Doctors/Edit/5
+        // POST: Documents/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Specialization,UserId")] Doctor doctor)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Type,File,Visit")] Document document)
         {
-            if (id != doctor.Id)
+            if (id != document.ID)
             {
                 return NotFound();
             }
@@ -96,14 +96,14 @@ namespace KooliProjekt.Controllers
             {
                 try
                 {
-                    _context.Update(doctor);
+                    _context.Update(document);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DoctorExists(doctor.Id))
+                    if (!DocumentExists(document.ID))
                     {
-                        return NotFound(); // sosi
+                        return NotFound();
                     }
                     else
                     {
@@ -112,10 +112,10 @@ namespace KooliProjekt.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(doctor);
+            return View(document);
         }
 
-        // GET: Doctors/Delete/5
+        // GET: Documents/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -123,34 +123,34 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (doctor == null)
+            var document = await _context.Documents
+                .FirstOrDefaultAsync(m => m.ID == id);
+            if (document == null)
             {
                 return NotFound();
             }
 
-            return View(doctor);
+            return View(document);
         }
 
-        // POST: Doctors/Delete/5
+        // POST: Documents/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var doctor = await _context.Doctors.FindAsync(id);
-            if (doctor != null)
+            var document = await _context.Documents.FindAsync(id);
+            if (document != null)
             {
-                _context.Doctors.Remove(doctor);
+                _context.Documents.Remove(document);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DoctorExists(int id)
+        private bool DocumentExists(int id)
         {
-            return _context.Doctors.Any(e => e.Id == id);
+            return _context.Documents.Any(e => e.ID == id);
         }
     }
 }
