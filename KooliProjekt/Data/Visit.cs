@@ -20,7 +20,7 @@ namespace KooliProjekt.Data
         public int DoctorId { get; set; }
 
         [Required]
-        public DateTime Date { get; set; }
+        public DateTime Date { get; set; }d
 
         [Required]
         public int Duration { get; set; }
