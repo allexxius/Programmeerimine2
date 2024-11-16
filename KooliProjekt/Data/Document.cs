@@ -15,6 +15,7 @@ namespace KooliProjekt.Data
         [StringLength(50)]
         public string File { get; set; }
 
+
         [Required]
         public int Visit { get; set; }
     }

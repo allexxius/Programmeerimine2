@@ -103,7 +103,7 @@ namespace KooliProjekt.Controllers
                 {
                     if (!DoctorExists(doctor.Id))
                     {
-                        return NotFound();
+                        return NotFound(); // sosi
                     }
                     else
                     {
