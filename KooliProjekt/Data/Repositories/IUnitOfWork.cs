@@ -1,4 +1,6 @@
-﻿namespace KooliProjekt.Data.Repositories
+﻿using System.Security.Policy;
+
+namespace KooliProjekt.Data.Repositories
 {
     public interface IUnitOfWork
     {
@@ -9,3 +11,4 @@
         IDoctorRepository DoctorRepository { get; }
     }
 }
+

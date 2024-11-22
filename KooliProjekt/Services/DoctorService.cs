@@ -1,4 +1,5 @@
 ﻿using KooliProjekt.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.Services
@@ -21,6 +22,32 @@ namespace KooliProjekt.Services
         {
             return await _context.Doctors.FirstOrDefaultAsync(m => m.Id == id);
         }
+
+        public async Task Save(Doctor list)
+        {
+            if (list.Id == 0)
+            {
+                _context.Add(list);
+            }
+            else
+            {
+                _context.Update(list);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task Delete(int id)
+        {
+            var todoList = await _context.Doctors.FindAsync(id);
+            if (todoList != null)
+            {
+                _context.Doctors.Remove(todoList);
+                await _context.SaveChangesAsync();
+            }
+        }
+    }
+}
 
         public async Task Save(Doctor list)
         {
