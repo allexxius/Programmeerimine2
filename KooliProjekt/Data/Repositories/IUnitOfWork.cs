@@ -6,6 +6,6 @@
         Task Commit();
         Task Rollback();
 
-        ITodoListRepository TodoListRepository { get; }
+        IDoctorRepository DoctorRepository { get; }
     }
 }

@@ -2,11 +2,11 @@
 
 namespace KooliProjekt.Data.Repositories
 {
-    public abstract class BaseRepository<T> where T : Entity
+    public abstract class DoctorRepository<T> where T : Entity
     {
         protected ApplicationDbContext DbContext { get; }
 
-        public BaseRepository(ApplicationDbContext context)
+        public DoctorRepository(ApplicationDbContext context)
         {
             DbContext = context;
         }
