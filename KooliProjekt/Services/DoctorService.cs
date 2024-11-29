@@ -39,36 +39,10 @@ namespace KooliProjekt.Services
 
         public async Task Delete(int id)
         {
-            var todoList = await _context.Doctors.FindAsync(id);
-            if (todoList != null)
+            var Doctor = await _context.Doctors.FindAsync(id);
+            if (Doctor != null)
             {
-                _context.Doctors.Remove(todoList);
-                await _context.SaveChangesAsync();
-            }
-        }
-    }
-}
-
-        public async Task Save(Doctor list)
-        {
-            if (list.Id == 0)
-            {
-                _context.Add(list);
-            }
-            else
-            {
-                _context.Update(list);
-            }
-
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task Delete(int id)
-        {
-            var doctor = await _context.Doctors.FindAsync(id);
-            if (doctor != null)
-            {
-                _context.Doctors.Remove(doctor);
+                _context.Doctors.Remove(Doctor);
                 await _context.SaveChangesAsync();
             }
         }

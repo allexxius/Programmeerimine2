@@ -18,6 +18,16 @@ namespace KooliProjekt.Controllers
             return View();
         }
 
+        [HttpPost]
+        public IActionResult Index(IFormFile myFile)
+        {
+            using (var stream = myFile.OpenReadStream())
+            {
+                stream.Seek(0, SeekOrigin.End);
+            }
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();
