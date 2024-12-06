@@ -6,22 +6,29 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using KooliProjekt.Data;
+using KooliProjekt.Models;
+using KooliProjekt.Services;
 
 namespace KooliProjekt.Controllers
 {
     public class DoctorsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IDoctorService _doctorService;
 
-        public DoctorsController(ApplicationDbContext context)
+        public DoctorsController(ApplicationDbContext context, IDoctorService doctorService)
         {
             _context = context;
+            _doctorService = doctorService;
         }
 
         // GET: Doctors
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(int page = 1, DoctorsIndexModel model = null)
         {
-            return View(await _context.Doctors.GetPagedAsync(page, 10));
+            model = model ?? new DoctorsIndexModel();
+            model.Data = await _doctorService.List(page, 10, model.Search);
+
+            return View(model);
         }
 
         // GET: Doctors/Details/5

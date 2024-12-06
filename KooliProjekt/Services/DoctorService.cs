@@ -1,5 +1,5 @@
 ﻿using KooliProjekt.Data;
-using Microsoft.AspNetCore.Mvc;
+using KooliProjekt.Search;
 using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.Services
@@ -13,9 +13,19 @@ namespace KooliProjekt.Services
             _context = context;
         }
 
-        public async Task<PagedResult<Doctor>> List(int page, int pageSize)
+        public async Task<PagedResult<Doctor>> List(int page, int pageSize, DoctorsSearch search = null)
         {
-            return await _context.Doctors.GetPagedAsync(page, 5);
+            var query = _context.Doctors.AsQueryable();
+
+            if (search != null)
+            {
+                if (!string.IsNullOrWhiteSpace(search.Keyword))
+                {
+                    query = query.Where(doctors => doctors.Name.Contains(search.Keyword));
+                }
+            }
+
+            return await query.GetPagedAsync(page, 5);
         }
 
         public async Task<Doctor> Get(int id)
@@ -39,10 +49,10 @@ namespace KooliProjekt.Services
 
         public async Task Delete(int id)
         {
-            var Doctor = await _context.Doctors.FindAsync(id);
-            if (Doctor != null)
+            var todoList = await _context.Doctors.FindAsync(id);
+            if (todoList != null)
             {
-                _context.Doctors.Remove(Doctor);
+                _context.Doctors.Remove(todoList);
                 await _context.SaveChangesAsync();
             }
         }

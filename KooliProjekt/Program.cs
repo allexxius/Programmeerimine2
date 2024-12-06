@@ -1,7 +1,8 @@
 using KooliProjekt.Data;
+using KooliProjekt.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-// a
+
 namespace KooliProjekt
 {
     public class Program
@@ -21,6 +22,8 @@ namespace KooliProjekt
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddScoped<ApplicationDbContext>();
+
+            builder.Services.AddScoped<IDoctorService, DoctorService>();
 
             var app = builder.Build();
 
@@ -50,11 +53,10 @@ namespace KooliProjekt
             app.MapRazorPages();
 
             using (var scope = app.Services.CreateScope())
-            using (var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
-
             {
-                context.Database.EnsureCreated();
-                SeedData.Generate(context);
+                var services = scope.ServiceProvider;
+                var dbContext = services.GetRequiredService<ApplicationDbContext>();
+                SeedData.Generate(dbContext); // Call the SeedData method
             }
 
             app.Run();
