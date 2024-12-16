@@ -9,22 +9,22 @@ using KooliProjekt.Data;
 
 namespace KooliProjekt.Controllers
 {
-    public class DoctorsController : Controller
+    public class TimesController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public DoctorsController(ApplicationDbContext context)
+        public TimesController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Doctors
+        // GET: Times
         public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Doctors.GetPagedAsync(page, 10));
+            return View(await _context.Times.GetPagedAsync(page, 10));
         }
 
-        // GET: Doctors/Details/5
+        // GET: Times/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -32,39 +32,39 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors
+            var time = await _context.Times
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (doctor == null)
+            if (time == null)
             {
                 return NotFound();
             }
 
-            return View(doctor);
+            return View(time);
         }
 
-        // GET: Doctors/Create
+        // GET: Times/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Doctors/Create
+        // POST: Times/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Specialization,UserId")] Doctor doctor)
+        public async Task<IActionResult> Create([Bind("Id,Date,VisitTime,Free,DoctorId")] Time time)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(doctor);
+                _context.Add(time);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(doctor);
+            return View(time);
         }
 
-        // GET: Doctors/Edit/5
+        // GET: Times/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -72,22 +72,22 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors.FindAsync(id);
-            if (doctor == null)
+            var time = await _context.Times.FindAsync(id);
+            if (time == null)
             {
                 return NotFound();
             }
-            return View(doctor);
+            return View(time);
         }
 
-        // POST: Doctors/Edit/5
+        // POST: Times/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Specialization,UserId")] Doctor doctor)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Date,VisitTime,Free,DoctorId")] Time time)
         {
-            if (id != doctor.Id)
+            if (id != time.Id)
             {
                 return NotFound();
             }
@@ -96,14 +96,14 @@ namespace KooliProjekt.Controllers
             {
                 try
                 {
-                    _context.Update(doctor);
+                    _context.Update(time);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DoctorExists(doctor.Id))
+                    if (!TimeExists(time.Id))
                     {
-                        return NotFound(); // sosi
+                        return NotFound();
                     }
                     else
                     {
@@ -112,10 +112,10 @@ namespace KooliProjekt.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(doctor);
+            return View(time);
         }
 
-        // GET: Doctors/Delete/5
+        // GET: Times/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -123,34 +123,34 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors
+            var time = await _context.Times
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (doctor == null)
+            if (time == null)
             {
                 return NotFound();
             }
 
-            return View(doctor);
+            return View(time);
         }
 
-        // POST: Doctors/Delete/5
+        // POST: Times/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var doctor = await _context.Doctors.FindAsync(id);
-            if (doctor != null)
+            var time = await _context.Times.FindAsync(id);
+            if (time != null)
             {
-                _context.Doctors.Remove(doctor);
+                _context.Times.Remove(time);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DoctorExists(int id)
+        private bool TimeExists(int id)
         {
-            return _context.Doctors.Any(e => e.Id == id);
+            return _context.Times.Any(e => e.Id == id);
         }
     }
 }

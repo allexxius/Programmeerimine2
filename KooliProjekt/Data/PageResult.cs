@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-﻿using System.Security.Policy;
-
-namespace KooliProjekt.Data
-=======
 ﻿namespace KooliProjekt.Data
->>>>>>> 3ab08cc95858c0f3d4ab2d2123111f2da03c6471
 {
     public class PagedResult<T> : PagedResultBase where T : class
     {
@@ -15,8 +9,4 @@ namespace KooliProjekt.Data
             Results = new List<T>();
         }
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 3ab08cc95858c0f3d4ab2d2123111f2da03c6471
