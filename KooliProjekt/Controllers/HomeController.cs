@@ -1,9 +1,6 @@
-<<<<<<< HEAD
+
 ﻿using KooliProjekt.Models;
 
-=======
-﻿ wdusing KooliProjekt.Models;
->>>>>>> 3ab08cc95858c0f3d4ab2d2123111f2da03c6471
 using Microsoft.AspNetCore.Mvc;
 
 using System.Diagnostics;
@@ -16,15 +13,7 @@ namespace KooliProjekt.Controllers
 
     {
 
-        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
-
-        {
-
-            _logger = logger;
-
-        }
 
         public IActionResult Index()
 

@@ -1,97 +1,83 @@
-﻿@model PagedResult<KooliProjekt.Data.Document>
+﻿using KooliProjekt.Data;
 
-@{
-<<<<<<< HEAD
+namespace KooliProjekt.Services
 
-    ViewData["Title"] = "Index";
+{
 
-=======
-    ViewData["Title"] = "Index";
->>>>>>> 3ab08cc95858c0f3d4ab2d2123111f2da03c6471
+    public interface IDoctorService
+
+    {
+
+        Task<PagedResult<Doctor>> List(int page, int pageSize);
+
+        Task<Doctor> Get(int id);
+
+        Task Save(Doctor list);
+
+        Task Delete(int id);
+
+    }
+
 }
+
+
+@model PagedResult<KooliProjekt.Data.Document>
+
+            @{
+
+                ViewData["Title"] = "Index";
+
+            }
 
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+<a asp-action="Create">Create New</a>
 </p>
 <table class="table">
-    <thead>
-        <tr>
-            <th>
-<<<<<<< HEAD
+<thead>
+<tr>
+<th>
 
                 Type
-            </th>
-            <th>
+</th>
+<th>
 
                 File
-            </th>
-            <th>
+</th>
+<th>
 
-=======
-                Type
-            </th>
-            <th>
-                File
-            </th>
-            <th>
->>>>>>> 3ab08cc95858c0f3d4ab2d2123111f2da03c6471
                 Visit
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-<<<<<<< HEAD
+</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
 
-        @foreach (var item in Model.Results)
-        {
-            <tr>
-                <td>
+                    @foreach (var item in Model.Results)
+                    {
+    <tr>
+    <td>
 
-                    @Html.DisplayFor(modelItem => item.Type)
-                </td>
-                <td>
+                                @Html.DisplayFor(modelItem => item.Type)
+    </td>
+    <td>
 
-                    @Html.DisplayFor(modelItem => item.File)
-                </td>
-                <td>
+                                @Html.DisplayFor(modelItem => item.File)
+    </td>
+    <td>
 
-                    @Html.DisplayFor(modelItem => item.Visit)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-                </td>
-            </tr>
+                                @Html.DisplayFor(modelItem => item.Visit)
+    </td>
+    <td>
+    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+    </td>
+    </tr>
 
-        }
-    </tbody>
+                    }
+</tbody>
 </table>
 
-@(await Component.InvokeAsync<PagerViewComponent>(Model))
-=======
-@foreach (var item in Model.Results) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.File)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Visit)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-@(await Component.InvokeAsync<PagerViewComponent>(Model))
->>>>>>> 3ab08cc95858c0f3d4ab2d2123111f2da03c6471
+            @(await Component.InvokeAsync<PagerViewComponent>(Model))

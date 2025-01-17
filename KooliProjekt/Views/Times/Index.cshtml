@@ -1,13 +1,7 @@
 ﻿@model PagedResult<KooliProjekt.Data.Time>
 
 @{
-<<<<<<< HEAD
-
     ViewData["Title"] = "Index";
-
-=======
-    ViewData["Title"] = "Index";
->>>>>>> 3ab08cc95858c0f3d4ab2d2123111f2da03c6471
 }
 
 <h1>Index</h1>
@@ -19,21 +13,6 @@
     <thead>
         <tr>
             <th>
-<<<<<<< HEAD
-
-                Date
-            </th>
-            <th>
-
-                VisitTime
-            </th>
-            <th>
-
-                Free
-            </th>
-            <th>
-
-=======
                 Date
             </th>
             <th>
@@ -43,32 +22,25 @@
                 Free
             </th>
             <th>
->>>>>>> 3ab08cc95858c0f3d4ab2d2123111f2da03c6471
                 DoctorId
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-<<<<<<< HEAD
-
         @foreach (var item in Model.Results)
         {
             <tr>
                 <td>
-
                     @Html.DisplayFor(modelItem => item.Date)
                 </td>
                 <td>
-
                     @Html.DisplayFor(modelItem => item.VisitTime)
                 </td>
                 <td>
-
                     @Html.DisplayFor(modelItem => item.Free)
                 </td>
                 <td>
-
                     @Html.DisplayFor(modelItem => item.DoctorId)
                 </td>
                 <td>
@@ -77,35 +49,7 @@
                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
             </tr>
-
         }
     </tbody>
 </table>
-
 @(await Component.InvokeAsync<PagerViewComponent>(Model))
-=======
-@foreach (var item in Model.Results) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VisitTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Free)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DoctorId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-@(await Component.InvokeAsync<PagerViewComponent>(Model))
->>>>>>> 3ab08cc95858c0f3d4ab2d2123111f2da03c6471
