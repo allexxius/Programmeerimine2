@@ -6,16 +6,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using KooliProjekt.Data;
+using KooliProjekt.Services;
 
 namespace KooliProjekt.Controllers
 {
     public class DocumentsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private IDoctorService @object;
 
         public DocumentsController(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        public DocumentsController(IDoctorService @object)
+        {
+            this.@object = @object;
         }
 
         // GET: Documents

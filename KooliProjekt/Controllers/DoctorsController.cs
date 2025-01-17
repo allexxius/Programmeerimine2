@@ -6,16 +6,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using KooliProjekt.Data;
+using KooliProjekt.Services;
 
 namespace KooliProjekt.Controllers
 {
     public class DoctorsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private IDoctorService @object;
 
         public DoctorsController(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        public DoctorsController(IDoctorService @object)
+        {
+            this.@object = @object;
         }
 
         // GET: Doctors
