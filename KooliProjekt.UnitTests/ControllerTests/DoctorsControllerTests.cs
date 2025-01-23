@@ -12,15 +12,15 @@ using Xunit;
 
 namespace KooliProjekt.UnitTests.ControllerTests
 {
-    public class TodoListsControllerTests
+    public class DoctorsControllerTests
     {
-        private readonly Mock<IDoctorService> _DoctorServiceMock;
+        private readonly Mock<IDoctorService> _doctorServiceMock;
         private readonly DoctorsController _controller;
 
-        public TodoListsControllerTests()
+        public DoctorsControllerTests()
         {
-            _DoctorServiceMock = new Mock<IDoctorService>();
-            _controller = new DoctorsController(_DoctorServiceMock.Object);
+            _doctorServiceMock = new Mock<IDoctorService>();
+            _controller = new DoctorsController(_doctorServiceMock.Object);
         }
 
         [Fact]
@@ -34,7 +34,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
                 new Doctor { Id = 2, Name = "Test 2" }
             };
             var pagedResult = new PagedResult<Doctor> { Results = data };
-            _DoctorServiceMock.Setup(x => x.List(page, It.IsAny<int>())).ReturnsAsync(pagedResult);
+            _doctorServiceMock.Setup(x => x.List(page, It.IsAny<int>())).ReturnsAsync(pagedResult);
 
             // Act
             var result = await _controller.Index(page) as ViewResult;
