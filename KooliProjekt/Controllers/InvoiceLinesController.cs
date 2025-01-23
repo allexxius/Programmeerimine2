@@ -21,7 +21,7 @@ namespace KooliProjekt.Controllers
         // GET: InvoiceLines
         public async Task<IActionResult> Index()
         {
-            return View(await _context.InvoicesLine.ToListAsync());
+            return View(await _context.InvoiceLines.ToListAsync());
         }
 
         // GET: InvoiceLines/Details/5
@@ -32,7 +32,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var invoiceLine = await _context.InvoicesLine
+            var invoiceLine = await _context.InvoiceLines
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (invoiceLine == null)
             {
@@ -72,7 +72,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var invoiceLine = await _context.InvoicesLine.FindAsync(id);
+            var invoiceLine = await _context.InvoiceLines.FindAsync(id);
             if (invoiceLine == null)
             {
                 return NotFound();
@@ -123,7 +123,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var invoiceLine = await _context.InvoicesLine
+            var invoiceLine = await _context.InvoiceLines
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (invoiceLine == null)
             {
@@ -138,10 +138,10 @@ namespace KooliProjekt.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var invoiceLine = await _context.InvoicesLine.FindAsync(id);
+            var invoiceLine = await _context.InvoiceLines.FindAsync(id);
             if (invoiceLine != null)
             {
-                _context.InvoicesLine.Remove(invoiceLine);
+                _context.InvoiceLines.Remove(invoiceLine);
             }
 
             await _context.SaveChangesAsync();
@@ -150,7 +150,7 @@ namespace KooliProjekt.Controllers
 
         private bool InvoiceLineExists(int id)
         {
-            return _context.InvoicesLine.Any(e => e.Id == id);
+            return _context.InvoiceLines.Any(e => e.Id == id);
         }
     }
 }
