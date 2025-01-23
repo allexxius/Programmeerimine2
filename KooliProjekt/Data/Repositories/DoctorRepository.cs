@@ -3,46 +3,42 @@ using System.Security.Policy;
 
 namespace KooliProjekt.Data.Repositories
 {
-    public abstract class DoctorRepository<T> where T : Entity
+    public abstract class DoctorRepository : BaseRepository<Doctor>, IDoctorRepository
     {
-        protected ApplicationDbContext DbContext { get; }
 
-        public DoctorRepository(ApplicationDbContext context)
-        {
-            DbContext = context;
-        }
+        public DoctorRepository(ApplicationDbContext context) : base(context) { }
 
-        public virtual async Task<T> Get(int id)
-        {
-            return await DbContext.Set<T>().FindAsync(id);
-        }
+        //public virtual async Task<T> Get(int id)
+        //{
+        //    return await DbContext.Set<T>().FindAsync(id);
+        //}
 
-        public virtual async Task<PagedResult<T>> List(int page, int pageSize)
-        {
-            return await DbContext.Set<T>()
-                .OrderByDescending(x => x.Id)
-                .GetPagedAsync(page, pageSize);
-        }
+        //public virtual async Task<PagedResult<T>> List(int page, int pageSize)
+        //{
+        //    return await DbContext.Set<T>()
+        //        .OrderByDescending(x => x.Id)
+        //        .GetPagedAsync(page, pageSize);
+        //}
 
-        public virtual async Task Save(T item)
-        {
-            if (item.Id == 0)
-            {
-                DbContext.Set<T>().Add(item);
-            }
-            else
-            {
-                DbContext.Set<T>().Update(item);
-            }
+        //public virtual async Task Save(T item)
+        //{
+        //    if (item.Id == 0)
+        //    {
+        //        DbContext.Set<T>().Add(item);
+        //    }
+        //    else
+        //    {
+        //        DbContext.Set<T>().Update(item);
+        //    }
 
-            await DbContext.SaveChangesAsync();
-        }
+        //    await DbContext.SaveChangesAsync();
+        //}
 
-        public virtual async Task Delete(int id)
-        {
-            await DbContext.Set<T>()
-                .Where(item => item.Id == id)
-                .ExecuteDeleteAsync();
-        }
+        //public virtual async Task Delete(int id)
+        //{
+        //    await DbContext.Set<T>()
+        //        .Where(item => item.Id == id)
+        //        .ExecuteDeleteAsync();
+        //}
     }
 }
