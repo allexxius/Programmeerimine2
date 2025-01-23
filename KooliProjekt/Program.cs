@@ -1,5 +1,5 @@
 using KooliProjekt.Data;
-using KooliProjekt.Services;
+using KooliProjekt.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +23,8 @@ namespace KooliProjekt
 
             builder.Services.AddScoped<ApplicationDbContext>();
 
-            builder.Services.AddScoped<IDoctorService, DoctorService>();
+            builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             var app = builder.Build();
 
