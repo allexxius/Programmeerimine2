@@ -8,13 +8,13 @@ namespace KooliProjekt.Services
 
 {
 
-    public class DoctorService : IDoctorService
+    public class VisitService : IVisitService
 
     {
 
         private readonly ApplicationDbContext _context;
 
-        public DoctorService(ApplicationDbContext context)
+        public VisitService(ApplicationDbContext context)
 
         {
 
@@ -22,23 +22,23 @@ namespace KooliProjekt.Services
 
         }
 
-        public async Task<PagedResult<Doctor>> List(int page, int pageSize)
+        public async Task<PagedResult<Visit>> List(int page, int pageSize)
 
         {
 
-            return await _context.Doctors.GetPagedAsync(page, 5);
+            return await _context.Visits.GetPagedAsync(page, 5);
 
         }
 
-        public async Task<Doctor> Get(int id)
+        public async Task<Visit> Get(int id)
 
         {
 
-            return await _context.Doctors.FirstOrDefaultAsync(m => m.Id == id);
+            return await _context.Visits.FirstOrDefaultAsync(m => m.Id == id);
 
         }
 
-        public async Task Save(Doctor list)
+        public async Task Save(Visit list)
 
         {
 
@@ -66,13 +66,13 @@ namespace KooliProjekt.Services
 
         {
 
-            var Doctor = await _context.Doctors.FindAsync(id);
+            var Visit = await _context.Visits.FindAsync(id);
 
-            if (Doctor != null)
+            if (Visit != null)
 
             {
 
-                _context.Doctors.Remove(Doctor);
+                _context.Visits.Remove(Visit);
 
                 await _context.SaveChangesAsync();
 
