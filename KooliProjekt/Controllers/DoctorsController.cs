@@ -15,13 +15,9 @@ namespace KooliProjekt.Controllers
         private readonly ApplicationDbContext _context;
         private IDoctorService @object;
 
-        public DoctorsController(ApplicationDbContext context)
+        public DoctorsController(ApplicationDbContext context, IDoctorService @object)
         {
             _context = context;
-        }
-
-        public DoctorsController(IDoctorService @object)
-        {
             this.@object = @object;
         }
 
