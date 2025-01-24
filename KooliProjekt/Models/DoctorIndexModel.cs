@@ -3,9 +3,9 @@ using KooliProjekt.Search;
 
 namespace KooliProjekt.Models
 {
-    public class DoctorsIndexModel
+    public class DoctorIndexModel
     {
-        public DoctorsSearch Search { get; set; }
+        public DoctorSearch Search { get; set; }
         public PagedResult<Doctor> Data { get; set; }
     }
 }
