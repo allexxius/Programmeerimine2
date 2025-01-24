@@ -19,7 +19,7 @@ namespace KooliProjekt.Controllers
         }
 
         // GET: InvoiceLines
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page)
         {
             return View(await _context.InvoiceLines.ToListAsync());
         }

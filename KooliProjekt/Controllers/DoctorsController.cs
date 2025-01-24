@@ -3,32 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using KooliProjekt.Services;
 using Microsoft.EntityFrameworkCore;
 using KooliProjekt.Data;
-using KooliProjekt.Services;
 
 namespace KooliProjekt.Controllers
 {
     public class DoctorsController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private IDoctorService @object;
+        private readonly IDoctorService _doctorService;
 
-        public DoctorsController(ApplicationDbContext context)
+        public DoctorsController(IDoctorService doctorService)
         {
-            _context = context;
-        }
-
-        public DoctorsController(IDoctorService @object)
-        {
-            this.@object = @object;
+            _doctorService = doctorService;
         }
 
         // GET: Doctors
         public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Doctors.GetPagedAsync(page, 10));
+            var doctors = await _doctorService.List(page, 10); // Use List method from the service
+            return View(doctors);
         }
 
         // GET: Doctors/Details/5
@@ -39,8 +33,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var doctor = await _doctorService.Get(id.Value); // Use the Get method
             if (doctor == null)
             {
                 return NotFound();
@@ -56,16 +49,13 @@ namespace KooliProjekt.Controllers
         }
 
         // POST: Doctors/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Specialization,UserId")] Doctor doctor)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(doctor);
-                await _context.SaveChangesAsync();
+                await _doctorService.Save(doctor); // Use Save method from the service
                 return RedirectToAction(nameof(Index));
             }
             return View(doctor);
@@ -79,17 +69,16 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors.FindAsync(id);
+            var doctor = await _doctorService.Get(id.Value); // Use the Get method
             if (doctor == null)
             {
                 return NotFound();
             }
+
             return View(doctor);
         }
 
         // POST: Doctors/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Specialization,UserId")] Doctor doctor)
@@ -103,14 +92,13 @@ namespace KooliProjekt.Controllers
             {
                 try
                 {
-                    _context.Update(doctor);
-                    await _context.SaveChangesAsync();
+                    await _doctorService.Save(doctor); // Use Save method to update
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!DoctorExists(doctor.Id))
                     {
-                        return NotFound(); // sosi
+                        return NotFound();
                     }
                     else
                     {
@@ -119,6 +107,7 @@ namespace KooliProjekt.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             return View(doctor);
         }
 
@@ -130,8 +119,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctors
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var doctor = await _doctorService.Get(id.Value); // Use the Get method
             if (doctor == null)
             {
                 return NotFound();
@@ -145,19 +133,14 @@ namespace KooliProjekt.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var doctor = await _context.Doctors.FindAsync(id);
-            if (doctor != null)
-            {
-                _context.Doctors.Remove(doctor);
-            }
-
-            await _context.SaveChangesAsync();
+            await _doctorService.Delete(id); // Use Delete method from the service
             return RedirectToAction(nameof(Index));
         }
 
         private bool DoctorExists(int id)
         {
-            return _context.Doctors.Any(e => e.Id == id);
+            var doctor = _doctorService.Get(id).Result; // Check using the Get method
+            return doctor != null;
         }
     }
 }

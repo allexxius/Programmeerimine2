@@ -15,7 +15,7 @@ namespace KooliProjekt.Services
         Task Save(Document list);
 
         Task Delete(int id);
-
+     
     }
 
 }
