@@ -2,7 +2,7 @@
 
 {
 
-    public class DoctorsSearch
+    public class DoctorSearch
 
     { 
         public string Keyword { get; set; }
