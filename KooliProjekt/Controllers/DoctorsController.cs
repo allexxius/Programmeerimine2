@@ -13,6 +13,8 @@ using KooliProjekt.Services;
 using Microsoft.EntityFrameworkCore;
 
 using KooliProjekt.Data;
+using KooliProjekt.Search;
+using KooliProjekt.Models;
 
 namespace KooliProjekt.Controllers
 
@@ -34,13 +36,14 @@ namespace KooliProjekt.Controllers
 
         // GET: Doctors
 
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(int page = 1, DoctorSearch search = null)
 
         {
+            var model = new DoctorIndexModel();
+            model.Search = search;
+            model.Data = await _doctorService.List(page, 10); // Use List method from the service
 
-            var doctors = await _doctorService.List(page, 10); // Use List method from the service
-
-            return View(doctors);
+            return View(model);
 
         }
 

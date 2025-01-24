@@ -1,4 +1,4 @@
-﻿@model PagedResult<KooliProjekt.Data.Doctor>
+﻿@model KooliProjekt.Models.DoctorIndexModel
 
 @{
     ViewData["Title"] = "Index";
@@ -9,34 +9,46 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form method="get">
+    <div class="form-group">
+        <label class="control-label">Name</label>
+        <input asp-for="Search.Keyword" class="form-control" />
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary">Search</button>
+        <a asp-controller="Doctors" asp-action="Index" class="btn btn-primary">Reset</a>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                Specialization
-            </th>
-            <th>
-                UserId
+
+                Name
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Results) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Specialization)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+
+        @foreach (var item in Model.Data.Results)
+        {
+            <tr>
+                <td>
+
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+
+        }
     </tbody>
 </table>
-@(await Component.InvokeAsync<PagerViewComponent>(Model))
+
+@(await Component.InvokeAsync<PagerViewComponent>(Model.Data))
