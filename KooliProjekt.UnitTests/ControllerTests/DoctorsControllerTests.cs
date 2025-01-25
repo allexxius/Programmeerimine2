@@ -30,6 +30,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
             {
                 new Doctor { Id = 1, Name = "Test 1" },
                 new Doctor { Id = 2, Name = "Test 2" }
+
             };
             var pagedResult = new PagedResult<Doctor> { Results = data }; // Assuming PagedResult is still in use
             _doctorServiceMock
@@ -42,7 +43,8 @@ namespace KooliProjekt.UnitTests.ControllerTests
             // Assert
             Assert.NotNull(result);
             Assert.NotNull(result.Model);
-            Assert.Equal(pagedResult, result.Model);
+            var Data = result.Model as DoctorIndexModel;
+            Assert.Equal(pagedResult, Data.Data);
         }
 
     }

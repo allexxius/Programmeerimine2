@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using KooliProjekt.Services;
 using Microsoft.EntityFrameworkCore;
 using KooliProjekt.Data;
 
@@ -11,20 +11,21 @@ namespace KooliProjekt.Controllers
 {
     public class InvoiceLinesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IInvoiceLineService _invoiceLineService;
 
-        public InvoiceLinesController(ApplicationDbContext context)
+        public InvoiceLinesController(IInvoiceLineService invoiceLineService)
         {
-            _context = context;
+            _invoiceLineService = invoiceLineService;
         }
 
-        // GET: InvoiceLines
-        public async Task<IActionResult> Index(int page)
+        // GET: Doctors
+        public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.InvoiceLines.ToListAsync());
+            var InvoiceLine = await _invoiceLineService.List(page, 10); // Use List method from the service
+            return View(InvoiceLine);
         }
 
-        // GET: InvoiceLines/Details/5
+        // GET: Doctors/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -32,8 +33,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var invoiceLine = await _context.InvoiceLines
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var invoiceLine = await _invoiceLineService.Get(id.Value); // Use the Get method
             if (invoiceLine == null)
             {
                 return NotFound();
@@ -42,29 +42,26 @@ namespace KooliProjekt.Controllers
             return View(invoiceLine);
         }
 
-        // GET: InvoiceLines/Create
+        // GET: Doctors/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: InvoiceLines/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Doctors/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,InvoiceId,Service,Price")] InvoiceLine invoiceLine)
+        public async Task<IActionResult> Create([Bind("Id,Specialization,UserId")] InvoiceLine invoiceLine)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(invoiceLine);
-                await _context.SaveChangesAsync();
+                await _invoiceLineService.Save(invoiceLine); // Use Save method from the service
                 return RedirectToAction(nameof(Index));
             }
             return View(invoiceLine);
         }
 
-        // GET: InvoiceLines/Edit/5
+        // GET: Doctors/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -72,20 +69,19 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var invoiceLine = await _context.InvoiceLines.FindAsync(id);
+            var invoiceLine = await _invoiceLineService.Get(id.Value); // Use the Get method
             if (invoiceLine == null)
             {
                 return NotFound();
             }
+
             return View(invoiceLine);
         }
 
-        // POST: InvoiceLines/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Doctors/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,InvoiceId,Service,Price")] InvoiceLine invoiceLine)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Specialization,UserId")] InvoiceLine invoiceLine)
         {
             if (id != invoiceLine.Id)
             {
@@ -96,12 +92,11 @@ namespace KooliProjekt.Controllers
             {
                 try
                 {
-                    _context.Update(invoiceLine);
-                    await _context.SaveChangesAsync();
+                    await _invoiceLineService.Save(invoiceLine); // Use Save method to update
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!InvoiceLineExists(invoiceLine.Id))
+                    if (!DocumentExists(invoiceLine.Id))
                     {
                         return NotFound();
                     }
@@ -112,10 +107,11 @@ namespace KooliProjekt.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             return View(invoiceLine);
         }
 
-        // GET: InvoiceLines/Delete/5
+        // GET: Doctors/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -123,8 +119,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var invoiceLine = await _context.InvoiceLines
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var invoiceLine = await _invoiceLineService.Get(id.Value); // Use the Get method
             if (invoiceLine == null)
             {
                 return NotFound();
@@ -133,24 +128,19 @@ namespace KooliProjekt.Controllers
             return View(invoiceLine);
         }
 
-        // POST: InvoiceLines/Delete/5
+        // POST: Doctors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var invoiceLine = await _context.InvoiceLines.FindAsync(id);
-            if (invoiceLine != null)
-            {
-                _context.InvoiceLines.Remove(invoiceLine);
-            }
-
-            await _context.SaveChangesAsync();
+            await _invoiceLineService.Delete(id); // Use Delete method from the service
             return RedirectToAction(nameof(Index));
         }
 
-        private bool InvoiceLineExists(int id)
+        private bool DocumentExists(int id)
         {
-            return _context.InvoiceLines.Any(e => e.Id == id);
+            var invoiceLine = _invoiceLineService.Get(id).Result; // Check using the Get method
+            return invoiceLine != null;
         }
     }
 }
