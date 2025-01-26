@@ -15,7 +15,6 @@ namespace KooliProjekt.Services
         Task Save(Time list);
 
         Task Delete(int id);
-
     }
 
 }

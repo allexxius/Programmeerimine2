@@ -4,6 +4,8 @@ namespace KooliProjekt.Data
 {
     public class Time
     {
+        internal static int id;
+
         [Required]
         public int Id { get; set; }
 
