@@ -15,7 +15,7 @@ namespace KooliProjekt.Services
         Task Save(Invoice list);
 
         Task Delete(int id);
-
+       
     }
 
 }

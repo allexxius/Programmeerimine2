@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using KooliProjekt.Controllers;
 using KooliProjekt.Services;
-using KooliProjekt.Models; // Assuming Doctor and PagedResult are defined here
+using KooliProjekt.Models;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -21,6 +21,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
             _controller = new DoctorsController(_doctorServiceMock.Object);
         }
 
+        // Index Action Tests
         [Fact]
         public async Task Index_ShouldReturnCorrectViewWithData()
         {
@@ -30,11 +31,10 @@ namespace KooliProjekt.UnitTests.ControllerTests
             {
                 new Doctor { Id = 1, Name = "Test 1" },
                 new Doctor { Id = 2, Name = "Test 2" }
-
             };
-            var pagedResult = new PagedResult<Doctor> { Results = data }; // Assuming PagedResult is still in use
+            var pagedResult = new PagedResult<Doctor> { Results = data };
             _doctorServiceMock
-                .Setup(x => x.List(page, 10)) // Use List instead of GetPagedAsync
+                .Setup(x => x.List(page, 10))
                 .ReturnsAsync(pagedResult);
 
             // Act
@@ -43,9 +43,236 @@ namespace KooliProjekt.UnitTests.ControllerTests
             // Assert
             Assert.NotNull(result);
             Assert.NotNull(result.Model);
-            var Data = result.Model as DoctorIndexModel;
-            Assert.Equal(pagedResult, Data.Data);
+            var model = result.Model as DoctorIndexModel;
+            Assert.Equal(pagedResult, model.Data);
         }
 
+        // Details Action Tests
+        [Fact]
+        public async Task Details_ShouldReturnNotFound_WhenIdIsNull()
+        {
+            // Arrange
+            int? id = null;
+
+            // Act
+            var result = await _controller.Details(id);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Details_ShouldReturnNotFound_WhenDoctorDoesNotExist()
+        {
+            // Arrange
+            int id = 1;
+            _doctorServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync((Doctor)null);
+
+            // Act
+            var result = await _controller.Details(id);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Details_ShouldReturnViewWithDoctor_WhenDoctorExists()
+        {
+            // Arrange
+            int id = 1;
+            var doctor = new Doctor { Id = id, Name = "Test Doctor" };
+            _doctorServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync(doctor);
+
+            // Act
+            var result = await _controller.Details(id) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotNull(result.Model);
+            Assert.Equal(doctor, result.Model);
+        }
+
+        // Create (GET) Action Tests
+        [Fact]
+        public void Create_ShouldReturnView()
+        {
+            // Act
+            var result = _controller.Create() as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        // Edit (GET) Action Tests
+        [Fact]
+        public async Task Edit_ShouldReturnNotFound_WhenIdIsNull()
+        {
+            // Arrange
+            int? id = null;
+
+            // Act
+            var result = await _controller.Edit(id);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Edit_ShouldReturnNotFound_WhenDoctorDoesNotExist()
+        {
+            // Arrange
+            int id = 1;
+            _doctorServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync((Doctor)null);
+
+            // Act
+            var result = await _controller.Edit(id);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Edit_ShouldReturnViewWithDoctor_WhenDoctorExists()
+        {
+            // Arrange
+            int id = 1;
+            var doctor = new Doctor { Id = id, Name = "Test Doctor" };
+            _doctorServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync(doctor);
+
+            // Act
+            var result = await _controller.Edit(id) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotNull(result.Model);
+            Assert.Equal(doctor, result.Model);
+        }
+
+        // Delete (GET) Action Tests
+        [Fact]
+        public async Task Delete_ShouldReturnNotFound_WhenIdIsNull()
+        {
+            // Arrange
+            int? id = null;
+
+            // Act
+            var result = await _controller.Delete(id);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Delete_ShouldReturnNotFound_WhenDoctorDoesNotExist()
+        {
+            // Arrange
+            int id = 1;
+            _doctorServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync((Doctor)null);
+
+            // Act
+            var result = await _controller.Delete(id);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Delete_ShouldReturnViewWithDoctor_WhenDoctorExists()
+        {
+            // Arrange
+            int id = 1;
+            var doctor = new Doctor { Id = id, Name = "Test Doctor" };
+            _doctorServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync(doctor);
+
+            // Act
+            var result = await _controller.Delete(id) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotNull(result.Model);
+            Assert.Equal(doctor, result.Model);
+        }
+
+        // DeleteConfirmed (POST) Action Tests
+        [Fact]
+        public async Task DeleteConfirmed_ShouldCallDeleteMethod_AndRedirectToIndex()
+        {
+            // Arrange
+            int id = 1;
+            _doctorServiceMock
+                .Setup(x => x.Delete(id))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.DeleteConfirmed(id) as RedirectToActionResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Index", result.ActionName);
+            _doctorServiceMock.Verify(x => x.Delete(id), Times.Once);
+        }
+
+        // Edit (POST) Action Tests
+        [Fact]
+        public async Task Edit_ShouldReturnNotFound_WhenIdDoesNotMatch()
+        {
+            // Arrange
+            int id = 1;
+            var doctor = new Doctor { Id = 2, Name = "Test Doctor" };
+
+            // Act
+            var result = await _controller.Edit(id, doctor);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Edit_ShouldReturnViewWithDoctor_WhenModelStateIsInvalid()
+        {
+            // Arrange
+            int id = 1;
+            var doctor = new Doctor { Id = id, Name = "Test Doctor" };
+            _controller.ModelState.AddModelError("Name", "Required");
+
+            // Act
+            var result = await _controller.Edit(id, doctor) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotNull(result.Model);
+            Assert.Equal(doctor, result.Model);
+        }
+
+        [Fact]
+        public async Task Edit_ShouldCallSaveMethod_AndRedirectToIndex_WhenModelStateIsValid()
+        {
+            // Arrange
+            int id = 1;
+            var doctor = new Doctor { Id = id, Name = "Test Doctor" };
+            _doctorServiceMock
+                .Setup(x => x.Save(doctor))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.Edit(id, doctor) as RedirectToActionResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Index", result.ActionName);
+            _doctorServiceMock.Verify(x => x.Save(doctor), Times.Once);
+        }
     }
 }

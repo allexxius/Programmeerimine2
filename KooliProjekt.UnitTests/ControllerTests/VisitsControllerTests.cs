@@ -22,21 +22,21 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
 {
 
-    public class InvoicesControllerTests
+    public class VisitsControllerTests
 
     {
 
-        private readonly Mock<IInvoiceService> _invoiceServiceMock;
+        private readonly Mock<IVisitService> _visitServiceMock;
 
-        private readonly InvoicesController _controller;
+        private readonly VisitsController _controller;
 
-        public InvoicesControllerTests()
+        public VisitsControllerTests()
 
         {
 
-            _invoiceServiceMock = new Mock<IInvoiceService>();
+            _visitServiceMock = new Mock<IVisitService>();
 
-            _controller = new InvoicesController(_invoiceServiceMock.Object);
+            _controller = new VisitsController(_visitServiceMock.Object);
 
         }
 
@@ -50,19 +50,19 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             int page = 1;
 
-            var data = new List<Invoice>
+            var data = new List<Visit>
 
             {
 
-                new Invoice { Id = 1, Sum = 1 },
+                new Visit { Id = 1, Duration = 1 },
 
-                new Invoice { Id = 2, Sum = 1 }
+                new Visit { Id = 2, Duration = 2 }
 
             };
 
-            var pagedResult = new PagedResult<Invoice> { Results = data };
+            var pagedResult = new PagedResult<Visit> { Results = data };
 
-            _invoiceServiceMock.Setup(x => x.List(page, It.IsAny<int>())).ReturnsAsync(pagedResult);
+            _visitServiceMock.Setup(x => x.List(page, It.IsAny<int>())).ReturnsAsync(pagedResult);
 
             // Act
 
@@ -86,7 +86,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             int id = 999;
 
-            _invoiceServiceMock.Setup(x => x.Get(id)).ReturnsAsync((Invoice)null);
+            _visitServiceMock.Setup(x => x.Get(id)).ReturnsAsync((Visit)null);
 
             // Act
 
@@ -108,9 +108,9 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             int id = 1;
 
-            var invoice = new Invoice { Id = id, Sum = 100 };
+            var visit = new Visit { Id = id, Duration = 30 };
 
-            _invoiceServiceMock.Setup(x => x.Get(id)).ReturnsAsync(invoice);
+            _visitServiceMock.Setup(x => x.Get(id)).ReturnsAsync(visit);
 
             // Act
 
@@ -120,7 +120,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             Assert.NotNull(result);
 
-            Assert.Equal(invoice, result.Model);
+            Assert.Equal(visit, result.Model);
 
         }
 
@@ -134,7 +134,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             int id = 999;
 
-            _invoiceServiceMock.Setup(x => x.Get(id)).ReturnsAsync((Invoice)null);
+            _visitServiceMock.Setup(x => x.Get(id)).ReturnsAsync((Visit)null);
 
             // Act
 
@@ -156,9 +156,9 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             int id = 1;
 
-            var invoice = new Invoice { Id = id, Sum = 100 };
+            var visit = new Visit { Id = id, Duration = 30 };
 
-            _invoiceServiceMock.Setup(x => x.Get(id)).ReturnsAsync(invoice);
+            _visitServiceMock.Setup(x => x.Get(id)).ReturnsAsync(visit);
 
             // Act
 
@@ -168,7 +168,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             Assert.NotNull(result);
 
-            Assert.Equal(invoice, result.Model);
+            Assert.Equal(visit, result.Model);
 
         }
 
@@ -198,7 +198,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             int id = 999;
 
-            _invoiceServiceMock.Setup(x => x.Get(id)).ReturnsAsync((Invoice)null);
+            _visitServiceMock.Setup(x => x.Get(id)).ReturnsAsync((Visit)null);
 
             // Act
 
@@ -220,9 +220,9 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             int id = 1;
 
-            var invoice = new Invoice { Id = id, Sum = 100 };
+            var visit = new Visit { Id = id, Duration = 30 };
 
-            _invoiceServiceMock.Setup(x => x.Get(id)).ReturnsAsync(invoice);
+            _visitServiceMock.Setup(x => x.Get(id)).ReturnsAsync(visit);
 
             // Act
 
@@ -232,7 +232,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             Assert.NotNull(result);
 
-            Assert.Equal(invoice, result.Model);
+            Assert.Equal(visit, result.Model);
 
         }
 
