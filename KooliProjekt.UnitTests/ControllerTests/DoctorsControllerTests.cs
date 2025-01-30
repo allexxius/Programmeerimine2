@@ -107,6 +107,41 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.NotNull(result);
         }
 
+        // Create (POST) Action Tests
+        [Fact]
+        public async Task Create_ShouldReturnViewWithModel_WhenModelStateIsInvalid()
+        {
+            // Arrange
+            var doctor = new Doctor { Id = 1, Name = "Test Doctor" };
+            _controller.ModelState.AddModelError("Name", "Required");
+
+            // Act
+            var result = await _controller.Create(doctor) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotNull(result.Model);
+            Assert.Equal(doctor, result.Model);
+        }
+
+        [Fact]
+        public async Task Create_ShouldCallSaveMethod_AndRedirectToIndex_WhenModelStateIsValid()
+        {
+            // Arrange
+            var doctor = new Doctor { Id = 1, Name = "Test Doctor" };
+            _doctorServiceMock
+                .Setup(x => x.Save(doctor))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.Create(doctor) as RedirectToActionResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Index", result.ActionName);
+            _doctorServiceMock.Verify(x => x.Save(doctor), Times.Once);
+        }
+
         // Edit (GET) Action Tests
         [Fact]
         public async Task Edit_ShouldReturnNotFound_WhenIdIsNull()
@@ -154,6 +189,57 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.NotNull(result);
             Assert.NotNull(result.Model);
             Assert.Equal(doctor, result.Model);
+        }
+
+        // Edit (POST) Action Tests
+        [Fact]
+        public async Task Edit_ShouldReturnNotFound_WhenIdDoesNotMatch()
+        {
+            // Arrange
+            int id = 1;
+            var doctor = new Doctor { Id = 2, Name = "Test Doctor" };
+
+            // Act
+            var result = await _controller.Edit(id, doctor);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Edit_ShouldReturnViewWithDoctor_WhenModelStateIsInvalid()
+        {
+            // Arrange
+            int id = 1;
+            var doctor = new Doctor { Id = id, Name = "Test Doctor" };
+            _controller.ModelState.AddModelError("Name", "Required");
+
+            // Act
+            var result = await _controller.Edit(id, doctor) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotNull(result.Model);
+            Assert.Equal(doctor, result.Model);
+        }
+
+        [Fact]
+        public async Task Edit_ShouldCallSaveMethod_AndRedirectToIndex_WhenModelStateIsValid()
+        {
+            // Arrange
+            int id = 1;
+            var doctor = new Doctor { Id = id, Name = "Test Doctor" };
+            _doctorServiceMock
+                .Setup(x => x.Save(doctor))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.Edit(id, doctor) as RedirectToActionResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Index", result.ActionName);
+            _doctorServiceMock.Verify(x => x.Save(doctor), Times.Once);
         }
 
         // Delete (GET) Action Tests
@@ -222,57 +308,6 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.NotNull(result);
             Assert.Equal("Index", result.ActionName);
             _doctorServiceMock.Verify(x => x.Delete(id), Times.Once);
-        }
-
-        // Edit (POST) Action Tests
-        [Fact]
-        public async Task Edit_ShouldReturnNotFound_WhenIdDoesNotMatch()
-        {
-            // Arrange
-            int id = 1;
-            var doctor = new Doctor { Id = 2, Name = "Test Doctor" };
-
-            // Act
-            var result = await _controller.Edit(id, doctor);
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result);
-        }
-
-        [Fact]
-        public async Task Edit_ShouldReturnViewWithDoctor_WhenModelStateIsInvalid()
-        {
-            // Arrange
-            int id = 1;
-            var doctor = new Doctor { Id = id, Name = "Test Doctor" };
-            _controller.ModelState.AddModelError("Name", "Required");
-
-            // Act
-            var result = await _controller.Edit(id, doctor) as ViewResult;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.NotNull(result.Model);
-            Assert.Equal(doctor, result.Model);
-        }
-
-        [Fact]
-        public async Task Edit_ShouldCallSaveMethod_AndRedirectToIndex_WhenModelStateIsValid()
-        {
-            // Arrange
-            int id = 1;
-            var doctor = new Doctor { Id = id, Name = "Test Doctor" };
-            _doctorServiceMock
-                .Setup(x => x.Save(doctor))
-                .Returns(Task.CompletedTask);
-
-            // Act
-            var result = await _controller.Edit(id, doctor) as RedirectToActionResult;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("Index", result.ActionName);
-            _doctorServiceMock.Verify(x => x.Save(doctor), Times.Once);
         }
     }
 }

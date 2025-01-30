@@ -51,5 +51,6 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.True(result.ViewName == "Error" ||
                         string.IsNullOrEmpty(result.ViewName));
         }
+
     }
 }

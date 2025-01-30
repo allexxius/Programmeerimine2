@@ -107,6 +107,41 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.NotNull(result);
         }
 
+        // Create (POST) Action Tests
+        [Fact]
+        public async Task Create_ShouldReturnViewWithModel_WhenModelStateIsInvalid()
+        {
+            // Arrange
+            var document = new Document { ID = 1, Type = "Test Document" };
+            _controller.ModelState.AddModelError("Type", "Required");
+
+            // Act
+            var result = await _controller.Create(document) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotNull(result.Model);
+            Assert.Equal(document, result.Model);
+        }
+
+        [Fact]
+        public async Task Create_ShouldCallSaveMethod_AndRedirectToIndex_WhenModelStateIsValid()
+        {
+            // Arrange
+            var document = new Document { ID = 1, Type = "Test Document" };
+            _documentServiceMock
+                .Setup(x => x.Save(document))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.Create(document) as RedirectToActionResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Index", result.ActionName);
+            _documentServiceMock.Verify(x => x.Save(document), Times.Once);
+        }
+
         // Edit (GET) Action Tests
         [Fact]
         public async Task Edit_ShouldReturnNotFound_WhenIdIsNull()
@@ -154,6 +189,57 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.NotNull(result);
             Assert.NotNull(result.Model);
             Assert.Equal(document, result.Model);
+        }
+
+        // Edit (POST) Action Tests
+        [Fact]
+        public async Task Edit_ShouldReturnNotFound_WhenIdDoesNotMatch()
+        {
+            // Arrange
+            int id = 1;
+            var document = new Document { ID = 2, Type = "Test Document" };
+
+            // Act
+            var result = await _controller.Edit(id, document);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Edit_ShouldReturnViewWithDocument_WhenModelStateIsInvalid()
+        {
+            // Arrange
+            int id = 1;
+            var document = new Document { ID = id, Type = "Test Document" };
+            _controller.ModelState.AddModelError("Type", "Required");
+
+            // Act
+            var result = await _controller.Edit(id, document) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotNull(result.Model);
+            Assert.Equal(document, result.Model);
+        }
+
+        [Fact]
+        public async Task Edit_ShouldCallSaveMethod_AndRedirectToIndex_WhenModelStateIsValid()
+        {
+            // Arrange
+            int id = 1;
+            var document = new Document { ID = id, Type = "Test Document" };
+            _documentServiceMock
+                .Setup(x => x.Save(document))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.Edit(id, document) as RedirectToActionResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Index", result.ActionName);
+            _documentServiceMock.Verify(x => x.Save(document), Times.Once);
         }
 
         // Delete (GET) Action Tests
@@ -222,57 +308,6 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.NotNull(result);
             Assert.Equal("Index", result.ActionName);
             _documentServiceMock.Verify(x => x.Delete(id), Times.Once);
-        }
-
-        // Edit (POST) Action Tests
-        [Fact]
-        public async Task Edit_ShouldReturnNotFound_WhenIdDoesNotMatch()
-        {
-            // Arrange
-            int id = 1;
-            var document = new Document { ID = 2, Type = "Test Document" };
-
-            // Act
-            var result = await _controller.Edit(id, document);
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result);
-        }
-
-        [Fact]
-        public async Task Edit_ShouldReturnViewWithDocument_WhenModelStateIsInvalid()
-        {
-            // Arrange
-            int id = 1;
-            var document = new Document { ID = id, Type = "Test Document" };
-            _controller.ModelState.AddModelError("Type", "Required");
-
-            // Act
-            var result = await _controller.Edit(id, document) as ViewResult;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.NotNull(result.Model);
-            Assert.Equal(document, result.Model);
-        }
-
-        [Fact]
-        public async Task Edit_ShouldCallSaveMethod_AndRedirectToIndex_WhenModelStateIsValid()
-        {
-            // Arrange
-            int id = 1;
-            var document = new Document { ID = id, Type = "Test Document" };
-            _documentServiceMock
-                .Setup(x => x.Save(document))
-                .Returns(Task.CompletedTask);
-
-            // Act
-            var result = await _controller.Edit(id, document) as RedirectToActionResult;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("Index", result.ActionName);
-            _documentServiceMock.Verify(x => x.Save(document), Times.Once);
         }
     }
 }
