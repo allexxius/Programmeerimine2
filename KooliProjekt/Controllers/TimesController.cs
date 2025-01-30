@@ -1,156 +1,254 @@
 ﻿using System;
+
 using System.Collections.Generic;
+
 using System.Linq;
+
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+
+using KooliProjekt.Services;
+
 using Microsoft.EntityFrameworkCore;
+
 using KooliProjekt.Data;
 
 namespace KooliProjekt.Controllers
+
 {
+
     public class TimesController : Controller
+
     {
-        private readonly ApplicationDbContext _context;
 
-        public TimesController(ApplicationDbContext context)
+        private readonly ITimeService _timeService;
+
+        public TimesController(ITimeService timeService)
+
         {
-            _context = context;
+
+            _timeService = timeService;
+
         }
 
-        // GET: Times
+        // GET: Doctors
+
         public async Task<IActionResult> Index(int page = 1)
+
         {
-            return View(await _context.Times.GetPagedAsync(page, 10));
+
+            var Time = await _timeService.List(page, 10); // Use List method from the service
+
+            return View(Time);
+
         }
 
-        // GET: Times/Details/5
+        // GET: Doctors/Details/5
+
         public async Task<IActionResult> Details(int? id)
+
         {
+
             if (id == null)
+
             {
+
                 return NotFound();
+
             }
 
-            var time = await _context.Times
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var time = await _timeService.Get(id.Value); // Use the Get method
+
             if (time == null)
+
             {
+
                 return NotFound();
+
             }
 
             return View(time);
+
         }
 
-        // GET: Times/Create
+        // GET: Doctors/Create
+
         public IActionResult Create()
+
         {
+
             return View();
+
         }
 
-        // POST: Times/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Doctors/Create
+
         [HttpPost]
+
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Date,VisitTime,Free,DoctorId")] Time time)
+
+        public async Task<IActionResult> Create([Bind("Id,Specialization,UserId")] Time time)
+
         {
+
             if (ModelState.IsValid)
+
             {
-                _context.Add(time);
-                await _context.SaveChangesAsync();
+
+                await _timeService.Save(time); // Use Save method from the service
+
                 return RedirectToAction(nameof(Index));
+
             }
+
             return View(time);
+
         }
 
-        // GET: Times/Edit/5
+        // GET: Doctors/Edit/5
+
         public async Task<IActionResult> Edit(int? id)
+
         {
+
             if (id == null)
+
             {
+
                 return NotFound();
+
             }
 
-            var time = await _context.Times.FindAsync(id);
+            var time = await _timeService.Get(id.Value); // Use the Get method
+
             if (time == null)
+
             {
+
                 return NotFound();
+
             }
+
             return View(time);
+
         }
 
-        // POST: Times/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Doctors/Edit/5
+
         [HttpPost]
+
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Date,VisitTime,Free,DoctorId")] Time time)
+
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Specialization,UserId")] Time time)
+
         {
+
             if (id != time.Id)
+
             {
+
                 return NotFound();
+
             }
 
             if (ModelState.IsValid)
+
             {
+
                 try
+
                 {
-                    _context.Update(time);
-                    await _context.SaveChangesAsync();
+
+                    await _timeService.Save(time); // Use Save method to update
+
                 }
+
                 catch (DbUpdateConcurrencyException)
+
                 {
-                    if (!TimeExists(time.Id))
+
+                    if (!DocumentExists(time.Id))
+
                     {
+
                         return NotFound();
+
                     }
+
                     else
+
                     {
+
                         throw;
+
                     }
+
                 }
+
                 return RedirectToAction(nameof(Index));
+
             }
+
             return View(time);
+
         }
 
-        // GET: Times/Delete/5
+        // GET: Doctors/Delete/5
+
         public async Task<IActionResult> Delete(int? id)
+
         {
+
             if (id == null)
+
             {
+
                 return NotFound();
+
             }
 
-            var time = await _context.Times
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var time = await _timeService.Get(id.Value); // Use the Get method
+
             if (time == null)
+
             {
+
                 return NotFound();
+
             }
 
             return View(time);
+
         }
 
-        // POST: Times/Delete/5
+        // POST: Doctors/Delete/5
+
         [HttpPost, ActionName("Delete")]
+
         [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var time = await _context.Times.FindAsync(id);
-            if (time != null)
-            {
-                _context.Times.Remove(time);
-            }
 
-            await _context.SaveChangesAsync();
+        {
+
+            await _timeService.Delete(id); // Use Delete method from the service
+
             return RedirectToAction(nameof(Index));
+
         }
 
-        private bool TimeExists(int id)
+        private bool DocumentExists(int id)
+
         {
-            return _context.Times.Any(e => e.Id == id);
+
+            var time = _timeService.Get(id).Result; // Check using the Get method
+
+            return time != null;
+
         }
+
     }
+
 }
+

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using KooliProjekt.Controllers;
 using KooliProjekt.Data;
@@ -30,8 +29,8 @@ namespace KooliProjekt.UnitTests.ControllerTests
             int page = 1;
             var data = new List<Invoice>
             {
-                new Invoice { Id = 1, Paid = true },
-                new Invoice { Id = 2, Paid = false }
+                new Invoice { Id = 1, Sum = 1 },
+                new Invoice { Id = 2, Sum = 1 }
             };
             var pagedResult = new PagedResult<Invoice> { Results = data };
             _invoiceServiceMock.Setup(x => x.List(page, It.IsAny<int>())).ReturnsAsync(pagedResult);
@@ -42,6 +41,106 @@ namespace KooliProjekt.UnitTests.ControllerTests
             // Assert
             Assert.NotNull(result);
             Assert.Equal(pagedResult, result.Model);
+        }
+
+        [Fact]
+        public async Task Edit_GET_should_return_not_found_for_invalid_id()
+        {
+            // Arrange
+            int id = 999;
+            _invoiceServiceMock.Setup(x => x.Get(id)).ReturnsAsync((Invoice)null);
+
+            // Act
+            var result = await _controller.Edit(id) as NotFoundResult;
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task Edit_GET_should_return_view_with_model_for_valid_id()
+        {
+            // Arrange
+            int id = 1;
+            var invoice = new Invoice { Id = id, Sum = 100 };
+            _invoiceServiceMock.Setup(x => x.Get(id)).ReturnsAsync(invoice);
+
+            // Act
+            var result = await _controller.Edit(id) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(invoice, result.Model);
+        }
+
+        [Fact]
+        public async Task Details_should_return_not_found_for_invalid_id()
+        {
+            // Arrange
+            int id = 999;
+            _invoiceServiceMock.Setup(x => x.Get(id)).ReturnsAsync((Invoice)null);
+
+            // Act
+            var result = await _controller.Details(id) as NotFoundResult;
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task Details_should_return_view_with_model_for_valid_id()
+        {
+            // Arrange
+            int id = 1;
+            var invoice = new Invoice { Id = id, Sum = 100 };
+            _invoiceServiceMock.Setup(x => x.Get(id)).ReturnsAsync(invoice);
+
+            // Act
+            var result = await _controller.Details(id) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(invoice, result.Model);
+        }
+
+        [Fact]
+        public void Create_GET_should_return_view()
+        {
+            // Act
+            var result = _controller.Create() as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task Delete_GET_should_return_not_found_for_invalid_id()
+        {
+            // Arrange
+            int id = 999;
+            _invoiceServiceMock.Setup(x => x.Get(id)).ReturnsAsync((Invoice)null);
+
+            // Act
+            var result = await _controller.Delete(id) as NotFoundResult;
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task Delete_GET_should_return_view_with_model_for_valid_id()
+        {
+            // Arrange
+            int id = 1;
+            var invoice = new Invoice { Id = id, Sum = 100 };
+            _invoiceServiceMock.Setup(x => x.Get(id)).ReturnsAsync(invoice);
+
+            // Act
+            var result = await _controller.Delete(id) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(invoice, result.Model);
         }
     }
 }
