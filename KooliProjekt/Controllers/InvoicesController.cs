@@ -32,19 +32,19 @@ namespace KooliProjekt.Controllers
 
         }
 
-        // GET: Doctors
+        // GET: Invoices
 
         public async Task<IActionResult> Index(int page = 1)
 
         {
 
-            var Invoice = await _invoiceService.List(page, 10); // Use List method from the service
+            var invoices = await _invoiceService.List(page, 10); // Use List method from the service
 
-            return View(Invoice);
+            return View(invoices);
 
         }
 
-        // GET: Doctors/Details/5
+        // GET: Invoices/Details/5
 
         public async Task<IActionResult> Details(int? id)
 
@@ -72,7 +72,7 @@ namespace KooliProjekt.Controllers
 
         }
 
-        // GET: Doctors/Create
+        // GET: Invoices/Create
 
         public IActionResult Create()
 
@@ -82,13 +82,13 @@ namespace KooliProjekt.Controllers
 
         }
 
-        // POST: Doctors/Create
+        // POST: Invoices/Create
 
         [HttpPost]
 
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> Create([Bind("Id,Specialization,UserId")] Invoice invoice)
+        public async Task<IActionResult> Create([Bind("Id,Sum,UserId")] Invoice invoice)
 
         {
 
@@ -106,7 +106,7 @@ namespace KooliProjekt.Controllers
 
         }
 
-        // GET: Doctors/Edit/5
+        // GET: Invoices/Edit/5
 
         public async Task<IActionResult> Edit(int? id)
 
@@ -134,13 +134,13 @@ namespace KooliProjekt.Controllers
 
         }
 
-        // POST: Doctors/Edit/5
+        // POST: Invoices/Edit/5
 
         [HttpPost]
 
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Specialization,UserId")] Invoice invoice)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Sum,UserId")] Invoice invoice)
 
         {
 
@@ -168,7 +168,7 @@ namespace KooliProjekt.Controllers
 
                 {
 
-                    if (!DocumentExists(invoice.Id))
+                    if (!InvoiceExists(invoice.Id))
 
                     {
 
@@ -194,7 +194,7 @@ namespace KooliProjekt.Controllers
 
         }
 
-        // GET: Doctors/Delete/5
+        // GET: Invoices/Delete/5
 
         public async Task<IActionResult> Delete(int? id)
 
@@ -222,7 +222,7 @@ namespace KooliProjekt.Controllers
 
         }
 
-        // POST: Doctors/Delete/5
+        // POST: Invoices/Delete/5
 
         [HttpPost, ActionName("Delete")]
 
@@ -238,7 +238,7 @@ namespace KooliProjekt.Controllers
 
         }
 
-        private bool DocumentExists(int id)
+        private bool InvoiceExists(int id)
 
         {
 
@@ -251,4 +251,3 @@ namespace KooliProjekt.Controllers
     }
 
 }
-
