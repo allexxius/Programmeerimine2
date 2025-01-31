@@ -10,6 +10,8 @@ using KooliProjekt.Controllers;
 
 using KooliProjekt.Data;
 
+using KooliProjekt.Models;
+
 using KooliProjekt.Services;
 
 using Microsoft.AspNetCore.Mvc;
@@ -40,9 +42,11 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
         }
 
+        // Index Action Tests
+
         [Fact]
 
-        public async Task Index_should_return_correct_view_with_data()
+        public async Task Index_ShouldReturnViewWithData()
 
         {
 
@@ -54,15 +58,19 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             {
 
-                new Visit { Id = 1, Duration = 1 },
+                new Visit { Id = 1, Duration = 30 },
 
-                new Visit { Id = 2, Duration = 2 }
+                new Visit { Id = 2, Duration = 45 }
 
             };
 
             var pagedResult = new PagedResult<Visit> { Results = data };
 
-            _visitServiceMock.Setup(x => x.List(page, It.IsAny<int>())).ReturnsAsync(pagedResult);
+            _visitServiceMock
+
+                .Setup(x => x.List(page, It.IsAny<int>()))
+
+                .ReturnsAsync(pagedResult);
 
             // Act
 
@@ -76,31 +84,57 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
         }
 
+        // Details Action Tests
+
         [Fact]
 
-        public async Task Edit_GET_should_return_not_found_for_invalid_id()
+        public async Task Details_ShouldReturnNotFound_WhenIdIsNull()
 
         {
 
             // Arrange
 
-            int id = 999;
-
-            _visitServiceMock.Setup(x => x.Get(id)).ReturnsAsync((Visit)null);
+            int? id = null;
 
             // Act
 
-            var result = await _controller.Edit(id) as NotFoundResult;
+            var result = await _controller.Details(id);
 
             // Assert
 
-            Assert.NotNull(result);
+            Assert.IsType<NotFoundResult>(result);
 
         }
 
         [Fact]
 
-        public async Task Edit_GET_should_return_view_with_model_for_valid_id()
+        public async Task Details_ShouldReturnNotFound_WhenVisitDoesNotExist()
+
+        {
+
+            // Arrange
+
+            int id = 1;
+
+            _visitServiceMock
+
+                .Setup(x => x.Get(id))
+
+                .ReturnsAsync((Visit)null);
+
+            // Act
+
+            var result = await _controller.Details(id);
+
+            // Assert
+
+            Assert.IsType<NotFoundResult>(result);
+
+        }
+
+        [Fact]
+
+        public async Task Details_ShouldReturnViewWithVisit_WhenVisitExists()
 
         {
 
@@ -110,55 +144,11 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             var visit = new Visit { Id = id, Duration = 30 };
 
-            _visitServiceMock.Setup(x => x.Get(id)).ReturnsAsync(visit);
+            _visitServiceMock
 
-            // Act
+                .Setup(x => x.Get(id))
 
-            var result = await _controller.Edit(id) as ViewResult;
-
-            // Assert
-
-            Assert.NotNull(result);
-
-            Assert.Equal(visit, result.Model);
-
-        }
-
-        [Fact]
-
-        public async Task Details_should_return_not_found_for_invalid_id()
-
-        {
-
-            // Arrange
-
-            int id = 999;
-
-            _visitServiceMock.Setup(x => x.Get(id)).ReturnsAsync((Visit)null);
-
-            // Act
-
-            var result = await _controller.Details(id) as NotFoundResult;
-
-            // Assert
-
-            Assert.NotNull(result);
-
-        }
-
-        [Fact]
-
-        public async Task Details_should_return_view_with_model_for_valid_id()
-
-        {
-
-            // Arrange
-
-            int id = 1;
-
-            var visit = new Visit { Id = id, Duration = 30 };
-
-            _visitServiceMock.Setup(x => x.Get(id)).ReturnsAsync(visit);
+                .ReturnsAsync(visit);
 
             // Act
 
@@ -172,9 +162,11 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
         }
 
+        // Create (GET) Action Test
+
         [Fact]
 
-        public void Create_GET_should_return_view()
+        public void Create_ShouldReturnView()
 
         {
 
@@ -188,31 +180,111 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
         }
 
+        // Create (POST) Action Tests
+
         [Fact]
 
-        public async Task Delete_GET_should_return_not_found_for_invalid_id()
+        public async Task Create_ShouldRedirectToIndex_WhenModelStateIsValid()
 
         {
 
             // Arrange
 
-            int id = 999;
+            var visit = new Visit { Id = 1, Duration = 30 };
 
-            _visitServiceMock.Setup(x => x.Get(id)).ReturnsAsync((Visit)null);
+            _visitServiceMock
+
+                .Setup(x => x.Save(visit))
+
+                .Returns(Task.CompletedTask);
 
             // Act
 
-            var result = await _controller.Delete(id) as NotFoundResult;
+            var result = await _controller.Create(visit) as RedirectToActionResult;
 
             // Assert
 
             Assert.NotNull(result);
 
+            Assert.Equal("Index", result.ActionName);
+
         }
 
         [Fact]
 
-        public async Task Delete_GET_should_return_view_with_model_for_valid_id()
+        public async Task Create_ShouldReturnView_WhenModelStateIsInvalid()
+
+        {
+
+            // Arrange
+
+            var visit = new Visit { Id = 1, Duration = 30 };
+
+            _controller.ModelState.AddModelError("Duration", "Required");
+
+            // Act
+
+            var result = await _controller.Create(visit) as ViewResult;
+
+            // Assert
+
+            Assert.NotNull(result);
+
+            Assert.Equal(visit, result.Model);
+
+        }
+
+        // Edit (GET) Action Tests
+
+        [Fact]
+
+        public async Task Edit_ShouldReturnNotFound_WhenIdIsNull()
+
+        {
+
+            // Arrange
+
+            int? id = null;
+
+            // Act
+
+            var result = await _controller.Edit(id);
+
+            // Assert
+
+            Assert.IsType<NotFoundResult>(result);
+
+        }
+
+        [Fact]
+
+        public async Task Edit_ShouldReturnNotFound_WhenVisitDoesNotExist()
+
+        {
+
+            // Arrange
+
+            int id = 1;
+
+            _visitServiceMock
+
+                .Setup(x => x.Get(id))
+
+                .ReturnsAsync((Visit)null);
+
+            // Act
+
+            var result = await _controller.Edit(id);
+
+            // Assert
+
+            Assert.IsType<NotFoundResult>(result);
+
+        }
+
+        [Fact]
+
+        public async Task Edit_ShouldReturnViewWithVisit_WhenVisitExists()
 
         {
 
@@ -222,7 +294,169 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             var visit = new Visit { Id = id, Duration = 30 };
 
-            _visitServiceMock.Setup(x => x.Get(id)).ReturnsAsync(visit);
+            _visitServiceMock
+
+                .Setup(x => x.Get(id))
+
+                .ReturnsAsync(visit);
+
+            // Act
+
+            var result = await _controller.Edit(id) as ViewResult;
+
+            // Assert
+
+            Assert.NotNull(result);
+
+            Assert.Equal(visit, result.Model);
+
+        }
+
+        // Edit (POST) Action Tests
+
+        [Fact]
+
+        public async Task Edit_ShouldRedirectToIndex_WhenModelStateIsValid()
+
+        {
+
+            // Arrange
+
+            int id = 1;
+
+            var visit = new Visit { Id = id, Duration = 30 };
+
+            _visitServiceMock
+
+                .Setup(x => x.Save(visit))
+
+                .Returns(Task.CompletedTask);
+
+            // Act
+
+            var result = await _controller.Edit(id, visit) as RedirectToActionResult;
+
+            // Assert
+
+            Assert.NotNull(result);
+
+            Assert.Equal("Index", result.ActionName);
+
+        }
+
+        [Fact]
+
+        public async Task Edit_ShouldReturnView_WhenModelStateIsInvalid()
+
+        {
+
+            // Arrange
+
+            int id = 1;
+
+            var visit = new Visit { Id = id, Duration = 30 };
+
+            _controller.ModelState.AddModelError("Duration", "Required");
+
+            // Act
+
+            var result = await _controller.Edit(id, visit) as ViewResult;
+
+            // Assert
+
+            Assert.NotNull(result);
+
+            Assert.Equal(visit, result.Model);
+
+        }
+
+        [Fact]
+
+        public async Task Edit_ShouldReturnNotFound_WhenIdMismatch()
+
+        {
+
+            // Arrange
+
+            int id = 1;
+
+            var visit = new Visit { Id = 2, Duration = 30 };
+
+            // Act
+
+            var result = await _controller.Edit(id, visit);
+
+            // Assert
+
+            Assert.IsType<NotFoundResult>(result);
+
+        }
+
+        // Delete (GET) Action Tests
+
+        [Fact]
+
+        public async Task Delete_ShouldReturnNotFound_WhenIdIsNull()
+
+        {
+
+            // Arrange
+
+            int? id = null;
+
+            // Act
+
+            var result = await _controller.Delete(id);
+
+            // Assert
+
+            Assert.IsType<NotFoundResult>(result);
+
+        }
+
+        [Fact]
+
+        public async Task Delete_ShouldReturnNotFound_WhenVisitDoesNotExist()
+
+        {
+
+            // Arrange
+
+            int id = 1;
+
+            _visitServiceMock
+
+                .Setup(x => x.Get(id))
+
+                .ReturnsAsync((Visit)null);
+
+            // Act
+
+            var result = await _controller.Delete(id);
+
+            // Assert
+
+            Assert.IsType<NotFoundResult>(result);
+
+        }
+
+        [Fact]
+
+        public async Task Delete_ShouldReturnViewWithVisit_WhenVisitExists()
+
+        {
+
+            // Arrange
+
+            int id = 1;
+
+            var visit = new Visit { Id = id, Duration = 30 };
+
+            _visitServiceMock
+
+                .Setup(x => x.Get(id))
+
+                .ReturnsAsync(visit);
 
             // Act
 
@@ -233,6 +467,36 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.NotNull(result);
 
             Assert.Equal(visit, result.Model);
+
+        }
+
+        // DeleteConfirmed (POST) Action Test
+
+        [Fact]
+
+        public async Task DeleteConfirmed_ShouldRedirectToIndex()
+
+        {
+
+            // Arrange
+
+            int id = 1;
+
+            _visitServiceMock
+
+                .Setup(x => x.Delete(id))
+
+                .Returns(Task.CompletedTask);
+
+            // Act
+
+            var result = await _controller.DeleteConfirmed(id) as RedirectToActionResult;
+
+            // Assert
+
+            Assert.NotNull(result);
+
+            Assert.Equal("Index", result.ActionName);
 
         }
 

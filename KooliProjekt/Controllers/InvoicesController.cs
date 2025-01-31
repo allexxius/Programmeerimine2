@@ -18,14 +18,14 @@ namespace KooliProjekt.Controllers
             _invoiceService = invoiceService;
         }
 
-        // GET: Doctors
+        // GET: Invoices
         public async Task<IActionResult> Index(int page = 1)
         {
-            var Invoice = await _invoiceService.List(page, 10); // Use List method from the service
-            return View(Invoice);
+            var invoices = await _invoiceService.List(page, 10); // Use List method from the service
+            return View(invoices);
         }
 
-        // GET: Doctors/Details/5
+        // GET: Invoices/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -42,16 +42,16 @@ namespace KooliProjekt.Controllers
             return View(invoice);
         }
 
-        // GET: Doctors/Create
+        // GET: Invoices/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Doctors/Create
+        // POST: Invoices/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Specialization,UserId")] Invoice invoice)
+        public async Task<IActionResult> Create([Bind("Id,Sum,UserId")] Invoice invoice)
         {
             if (ModelState.IsValid)
             {
@@ -61,7 +61,7 @@ namespace KooliProjekt.Controllers
             return View(invoice);
         }
 
-        // GET: Doctors/Edit/5
+        // GET: Invoices/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -78,10 +78,10 @@ namespace KooliProjekt.Controllers
             return View(invoice);
         }
 
-        // POST: Doctors/Edit/5
+        // POST: Invoices/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Specialization,UserId")] Invoice invoice)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Sum,UserId")] Invoice invoice)
         {
             if (id != invoice.Id)
             {
@@ -96,7 +96,7 @@ namespace KooliProjekt.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DocumentExists(invoice.Id))
+                    if (!InvoiceExists(invoice.Id))
                     {
                         return NotFound();
                     }
@@ -111,7 +111,7 @@ namespace KooliProjekt.Controllers
             return View(invoice);
         }
 
-        // GET: Doctors/Delete/5
+        // GET: Invoices/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -128,7 +128,7 @@ namespace KooliProjekt.Controllers
             return View(invoice);
         }
 
-        // POST: Doctors/Delete/5
+        // POST: Invoices/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -137,7 +137,7 @@ namespace KooliProjekt.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DocumentExists(int id)
+        private bool InvoiceExists(int id)
         {
             var invoice = _invoiceService.Get(id).Result; // Check using the Get method
             return invoice != null;

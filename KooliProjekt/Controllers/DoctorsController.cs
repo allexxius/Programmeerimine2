@@ -42,11 +42,15 @@ namespace KooliProjekt.Controllers
 
         {
 
-            var model = new DoctorIndexModel();
+            var model = new DoctorIndexModel
 
-            model.Search = search;
+            {
 
-            model.Data = await _doctorService.List(page, 10); // Use List method from the service
+                Search = search,
+
+                Data = await _doctorService.List(page, 10, search)
+
+            };
 
             return View(model);
 
@@ -66,7 +70,7 @@ namespace KooliProjekt.Controllers
 
             }
 
-            var doctor = await _doctorService.Get(id.Value); // Use the Get method
+            var doctor = await _doctorService.Get(id.Value);
 
             if (doctor == null)
 
@@ -96,7 +100,7 @@ namespace KooliProjekt.Controllers
 
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> Create([Bind("Id,Specialization,UserId")] Doctor doctor)
+        public async Task<IActionResult> Create([Bind("Id,Name,Specialization,UserId")] Doctor doctor)
 
         {
 
@@ -104,7 +108,7 @@ namespace KooliProjekt.Controllers
 
             {
 
-                await _doctorService.Save(doctor); // Use Save method from the service
+                await _doctorService.Save(doctor);
 
                 return RedirectToAction(nameof(Index));
 
@@ -128,7 +132,7 @@ namespace KooliProjekt.Controllers
 
             }
 
-            var doctor = await _doctorService.Get(id.Value); // Use the Get method
+            var doctor = await _doctorService.Get(id.Value);
 
             if (doctor == null)
 
@@ -148,7 +152,7 @@ namespace KooliProjekt.Controllers
 
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Specialization,UserId")] Doctor doctor)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Specialization,UserId")] Doctor doctor)
 
         {
 
@@ -168,7 +172,7 @@ namespace KooliProjekt.Controllers
 
                 {
 
-                    await _doctorService.Save(doctor); // Use Save method to update
+                    await _doctorService.Save(doctor);
 
                 }
 
@@ -216,7 +220,7 @@ namespace KooliProjekt.Controllers
 
             }
 
-            var doctor = await _doctorService.Get(id.Value); // Use the Get method
+            var doctor = await _doctorService.Get(id.Value);
 
             if (doctor == null)
 
@@ -240,7 +244,7 @@ namespace KooliProjekt.Controllers
 
         {
 
-            await _doctorService.Delete(id); // Use Delete method from the service
+            await _doctorService.Delete(id);
 
             return RedirectToAction(nameof(Index));
 
@@ -250,9 +254,7 @@ namespace KooliProjekt.Controllers
 
         {
 
-            var doctor = _doctorService.Get(id).Result; // Check using the Get method
-
-            return doctor != null;
+            return _doctorService.Get(id).Result != null;
 
         }
 

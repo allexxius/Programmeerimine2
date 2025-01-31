@@ -1,8 +1,16 @@
 ﻿using KooliProjekt.Data;
 
-using Microsoft.AspNetCore.Mvc;
+using KooliProjekt.Models;
+
+using KooliProjekt.Search;
 
 using Microsoft.EntityFrameworkCore;
+
+using System.Collections.Generic;
+
+using System.Linq;
+
+using System.Threading.Tasks;
 
 namespace KooliProjekt.Services
 
@@ -22,13 +30,39 @@ namespace KooliProjekt.Services
 
         }
 
+        // List meetod ilma otsinguparameetriteta
+
         public async Task<PagedResult<Doctor>> List(int page, int pageSize)
 
         {
 
-            return await _context.Doctors.GetPagedAsync(page, 5);
+            return await _context.Doctors.GetPagedAsync(page, pageSize);
 
         }
+
+        // List meetod otsinguparameetritega
+
+        public async Task<PagedResult<Doctor>> List(int page, int pageSize, DoctorSearch search)
+
+        {
+
+            var query = _context.Doctors.AsQueryable();
+
+            // Rakenda otsinguparameetrid
+
+            if (!string.IsNullOrEmpty(search.Keyword))
+
+            {
+
+                query = query.Where(d => d.Name.Contains(search.Keyword));
+
+            }
+
+            return await query.GetPagedAsync(page, pageSize);
+
+        }
+
+        // Get meetod arsti ID järgi
 
         public async Task<Doctor> Get(int id)
 
@@ -38,15 +72,17 @@ namespace KooliProjekt.Services
 
         }
 
-        public async Task Save(Doctor list)
+        // Save meetod arsti salvestamiseks
+
+        public async Task Save(Doctor doctor)
 
         {
 
-            if (list.Id == 0)
+            if (doctor.Id == 0)
 
             {
 
-                _context.Add(list);
+                _context.Add(doctor);
 
             }
 
@@ -54,7 +90,7 @@ namespace KooliProjekt.Services
 
             {
 
-                _context.Update(list);
+                _context.Update(doctor);
 
             }
 
@@ -62,17 +98,19 @@ namespace KooliProjekt.Services
 
         }
 
+        // Delete meetod arsti kustutamiseks
+
         public async Task Delete(int id)
 
         {
 
-            var Doctor = await _context.Doctors.FindAsync(id);
+            var doctor = await _context.Doctors.FindAsync(id);
 
-            if (Doctor != null)
+            if (doctor != null)
 
             {
 
-                _context.Doctors.Remove(Doctor);
+                _context.Doctors.Remove(doctor);
 
                 await _context.SaveChangesAsync();
 
