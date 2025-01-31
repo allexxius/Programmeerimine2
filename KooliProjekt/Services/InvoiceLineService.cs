@@ -1,86 +1,36 @@
 ﻿using KooliProjekt.Data;
-
-using Microsoft.AspNetCore.Mvc;
-
-using Microsoft.EntityFrameworkCore;
+using KooliProjekt.Data.Repositories;
+using System.Threading.Tasks;
 
 namespace KooliProjekt.Services
-
 {
-
     public class InvoiceLineService : IInvoiceLineService
-
     {
+        private readonly IInvoiceLineRepository _invoiceLineRepository;
 
-        private readonly ApplicationDbContext _context;
-
-        public InvoiceLineService(ApplicationDbContext context)
-
+        public InvoiceLineService(IInvoiceLineRepository invoiceLineRepository)
         {
-
-            _context = context;
-
+            _invoiceLineRepository = invoiceLineRepository;
         }
 
         public async Task<PagedResult<InvoiceLine>> List(int page, int pageSize)
-
         {
-
-            return await _context.InvoiceLines.GetPagedAsync(page, 5);
-
+            return await _invoiceLineRepository.List(page, pageSize);
         }
 
         public async Task<InvoiceLine> Get(int id)
-
         {
-
-            return await _context.InvoiceLines.FirstOrDefaultAsync(m => m.Id == id);
-
+            return await _invoiceLineRepository.Get(id);
         }
 
-        public async Task Save(InvoiceLine list)
-
+        public async Task Save(InvoiceLine invoiceLine)
         {
-
-            if (list.Id == 0)
-
-            {
-
-                _context.Add(list);
-
-            }
-
-            else
-
-            {
-
-                _context.Update(list);
-
-            }
-
-            await _context.SaveChangesAsync();
-
+            await _invoiceLineRepository.Save(invoiceLine);
         }
 
         public async Task Delete(int id)
-
         {
-
-            var InvoiceLine = await _context.Doctors.FindAsync(id);
-
-            if (InvoiceLine != null)
-
-            {
-
-                _context.Doctors.Remove(InvoiceLine);
-
-                await _context.SaveChangesAsync();
-
-            }
-
+            await _invoiceLineRepository.Delete(id);
         }
-
     }
-
 }
-

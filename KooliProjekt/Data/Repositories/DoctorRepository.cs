@@ -1,44 +1,79 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Security.Policy;
+
+using System.Threading.Tasks;
 
 namespace KooliProjekt.Data.Repositories
+
 {
-    public abstract class DoctorRepository : BaseRepository<Doctor>, IDoctorRepository
+
+    public class DoctorRepository : BaseRepository<Doctor>, IDoctorRepository
+
     {
 
         public DoctorRepository(ApplicationDbContext context) : base(context) { }
 
-        //public virtual async Task<T> Get(int id)
-        //{
-        //    return await DbContext.Set<T>().FindAsync(id);
-        //}
+        public override async Task<Doctor> Get(int id)
 
-        //public virtual async Task<PagedResult<T>> List(int page, int pageSize)
-        //{
-        //    return await DbContext.Set<T>()
-        //        .OrderByDescending(x => x.Id)
-        //        .GetPagedAsync(page, pageSize);
-        //}
+        {
 
-        //public virtual async Task Save(T item)
-        //{
-        //    if (item.Id == 0)
-        //    {
-        //        DbContext.Set<T>().Add(item);
-        //    }
-        //    else
-        //    {
-        //        DbContext.Set<T>().Update(item);
-        //    }
+            return await DbContext.Set<Doctor>().FindAsync(id);
 
-        //    await DbContext.SaveChangesAsync();
-        //}
+        }
 
-        //public virtual async Task Delete(int id)
-        //{
-        //    await DbContext.Set<T>()
-        //        .Where(item => item.Id == id)
-        //        .ExecuteDeleteAsync();
-        //}
+        public override async Task<PagedResult<Doctor>> List(int page, int pageSize)
+
+        {
+
+            return await DbContext.Set<Doctor>()
+
+                .OrderByDescending(x => x.Id)
+
+                .GetPagedAsync(page, pageSize);
+
+        }
+
+        public override async Task Save(Doctor item)
+
+        {
+
+            if (item.Id == 0)
+
+            {
+
+                DbContext.Set<Doctor>().Add(item);
+
+            }
+
+            else
+
+            {
+
+                DbContext.Set<Doctor>().Update(item);
+
+            }
+
+            await DbContext.SaveChangesAsync();
+
+        }
+
+        public override async Task Delete(int id)
+
+        {
+
+            var doctor = await DbContext.Set<Doctor>().FindAsync(id);
+
+            if (doctor != null)
+
+            {
+
+                DbContext.Set<Doctor>().Remove(doctor);
+
+                await DbContext.SaveChangesAsync();
+
+            }
+
+        }
+
     }
+
 }

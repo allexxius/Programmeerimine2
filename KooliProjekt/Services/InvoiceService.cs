@@ -1,8 +1,10 @@
 ﻿using KooliProjekt.Data;
 
-using Microsoft.AspNetCore.Mvc;
+using KooliProjekt.Data.Repositories;
 
 using Microsoft.EntityFrameworkCore;
+
+using System.Threading.Tasks;
 
 namespace KooliProjekt.Services
 
@@ -12,13 +14,17 @@ namespace KooliProjekt.Services
 
     {
 
-        private readonly ApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public InvoiceService(ApplicationDbContext context)
+        private readonly IInvoiceRepository _invoiceRepository;
+
+        public InvoiceService(IUnitOfWork unitOfWork, IInvoiceRepository invoiceRepository)
 
         {
 
-            _context = context;
+            _unitOfWork = unitOfWork;
+
+            _invoiceRepository = invoiceRepository;
 
         }
 
@@ -26,7 +32,7 @@ namespace KooliProjekt.Services
 
         {
 
-            return await _context.Invoices.GetPagedAsync(page, 5);
+            return await _invoiceRepository.List(page, pageSize);
 
         }
 
@@ -34,31 +40,17 @@ namespace KooliProjekt.Services
 
         {
 
-            return await _context.Invoices.FirstOrDefaultAsync(m => m.Id == id);
+            return await _invoiceRepository.Get(id);
 
         }
 
-        public async Task Save(Invoice list)
+        public async Task Save(Invoice invoice)
 
         {
 
-            if (list.Id == 0)
+            await _invoiceRepository.Save(invoice);
 
-            {
-
-                _context.Add(list);
-
-            }
-
-            else
-
-            {
-
-                _context.Update(list);
-
-            }
-
-            await _context.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
 
         }
 
@@ -66,21 +58,12 @@ namespace KooliProjekt.Services
 
         {
 
-            var Invoice = await _context.Invoices.FindAsync(id);
+            await _invoiceRepository.Delete(id);
 
-            if (Invoice != null)
-
-            {
-
-                _context.Invoices.Remove(Invoice);
-
-                await _context.SaveChangesAsync();
-
-            }
+            await _unitOfWork.CommitAsync();
 
         }
 
     }
 
 }
-

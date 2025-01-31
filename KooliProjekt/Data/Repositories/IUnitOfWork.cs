@@ -7,6 +7,7 @@ namespace KooliProjekt.Data.Repositories
         Task BeginTransaction();
         Task Commit();
         Task Rollback();
+        Task CommitAsync();
 
         IDoctorRepository DoctorRepository { get; }
     }

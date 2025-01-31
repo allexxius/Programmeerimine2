@@ -1,48 +1,79 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Security.Policy;
+
+using System.Threading.Tasks;
 
 namespace KooliProjekt.Data.Repositories
+
 {
-    public abstract class InvoiceRepository<T> where T : Entity
+
+    public class InvoiceRepository : BaseRepository<Invoice>, IInvoiceRepository
+
     {
-        protected ApplicationDbContext DbContext { get; }
 
-        public InvoiceRepository(ApplicationDbContext context)
+        public InvoiceRepository(ApplicationDbContext context) : base(context) { }
+
+        public override async Task<Invoice> Get(int id)
+
         {
-            DbContext = context;
+
+            return await DbContext.Set<Invoice>().FindAsync(id);
+
         }
 
-        public virtual async Task<T> Get(int id)
-        {
-            return await DbContext.Set<T>().FindAsync(id);
-        }
+        public override async Task<PagedResult<Invoice>> List(int page, int pageSize)
 
-        public virtual async Task<PagedResult<T>> List(int page, int pageSize)
         {
-            return await DbContext.Set<T>()
+
+            return await DbContext.Set<Invoice>()
+
                 .OrderByDescending(x => x.Id)
+
                 .GetPagedAsync(page, pageSize);
+
         }
 
-        public virtual async Task Save(T item)
+        public override async Task Save(Invoice item)
+
         {
+
             if (item.Id == 0)
+
             {
-                DbContext.Set<T>().Add(item);
+
+                DbContext.Set<Invoice>().Add(item);
+
             }
+
             else
+
             {
-                DbContext.Set<T>().Update(item);
+
+                DbContext.Set<Invoice>().Update(item);
+
             }
 
             await DbContext.SaveChangesAsync();
+
         }
 
-        public virtual async Task Delete(int id)
+        public override async Task Delete(int id)
+
         {
-            await DbContext.Set<T>()
-                .Where(item => item.Id == id)
-                .ExecuteDeleteAsync();
+
+            var invoice = await DbContext.Set<Invoice>().FindAsync(id);
+
+            if (invoice != null)
+
+            {
+
+                DbContext.Set<Invoice>().Remove(invoice);
+
+                await DbContext.SaveChangesAsync();
+
+            }
+
         }
+
     }
+
 }

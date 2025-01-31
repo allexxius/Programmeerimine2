@@ -40,6 +40,11 @@ namespace KooliProjekt.Data.Repositories
             await _context.Database.CommitTransactionAsync();
         }
 
+        public Task CommitAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task Rollback()
         {
             await _context.Database.RollbackTransactionAsync();

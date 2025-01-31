@@ -1,48 +1,52 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Security.Policy;
+using System.Threading.Tasks;
+using KooliProjekt.Data;
 
 namespace KooliProjekt.Data.Repositories
 {
-    public abstract class InvoiceLineRepository<T> where T : Entity
+    public class InvoiceLineRepository : IInvoiceLineRepository
     {
-        protected ApplicationDbContext DbContext { get; }
+        protected readonly ApplicationDbContext _context;
 
         public InvoiceLineRepository(ApplicationDbContext context)
         {
-            DbContext = context;
+            _context = context;
         }
 
-        public virtual async Task<T> Get(int id)
+        public async Task<InvoiceLine> Get(int id)
         {
-            return await DbContext.Set<T>().FindAsync(id);
+            return await _context.InvoiceLines.FindAsync(id);
         }
 
-        public virtual async Task<PagedResult<T>> List(int page, int pageSize)
+        public async Task<PagedResult<InvoiceLine>> List(int page, int pageSize)
         {
-            return await DbContext.Set<T>()
+            return await _context.InvoiceLines
                 .OrderByDescending(x => x.Id)
                 .GetPagedAsync(page, pageSize);
         }
 
-        public virtual async Task Save(T item)
+        public async Task Save(InvoiceLine invoiceLine)
         {
-            if (item.Id == 0)
+            if (invoiceLine.Id == 0)
             {
-                DbContext.Set<T>().Add(item);
+                _context.InvoiceLines.Add(invoiceLine);
             }
             else
             {
-                DbContext.Set<T>().Update(item);
+                _context.InvoiceLines.Update(invoiceLine);
             }
 
-            await DbContext.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
-        public virtual async Task Delete(int id)
+        public async Task Delete(int id)
         {
-            await DbContext.Set<T>()
-                .Where(item => item.Id == id)
-                .ExecuteDeleteAsync();
+            var invoiceLine = await _context.InvoiceLines.FindAsync(id);
+            if (invoiceLine != null)
+            {
+                _context.InvoiceLines.Remove(invoiceLine);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

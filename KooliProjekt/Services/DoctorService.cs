@@ -1,60 +1,65 @@
 ﻿using KooliProjekt.Data;
+
+using KooliProjekt.Data.Repositories;
 using KooliProjekt.Search;
 using Microsoft.EntityFrameworkCore;
 
+using System.Threading.Tasks;
+
 namespace KooliProjekt.Services
+
 {
+
     public class DoctorService : IDoctorService
+
     {
-        private readonly ApplicationDbContext _context;
 
-        public DoctorService(ApplicationDbContext context)
+        private readonly IUnitOfWork _unitOfWork;
+
+        private readonly IDoctorRepository _doctorRepository;
+
+        public DoctorService(IUnitOfWork unitOfWork, IDoctorRepository doctorRepository)
+
         {
-            _context = context;
-        }
 
-        public async Task<PagedResult<Doctor>> List(int page, int pageSize, DoctorsSearch search = null)
-        {
-            var query = _context.Doctors.AsQueryable();
+            _unitOfWork = unitOfWork;
 
-            if (search != null)
-            {
-                if (!string.IsNullOrWhiteSpace(search.Keyword))
-                {
-                    query = query.Where(doctors => doctors.Name.Contains(search.Keyword));
-                }
-            }
+            _doctorRepository = doctorRepository;
 
-            return await query.GetPagedAsync(page, 5);
         }
 
         public async Task<Doctor> Get(int id)
+
         {
-            return await _context.Doctors.FirstOrDefaultAsync(m => m.Id == id);
+
+            return await _doctorRepository.Get(id);
+
         }
 
-        public async Task Save(Doctor list)
-        {
-            if (list.Id == 0)
-            {
-                _context.Add(list);
-            }
-            else
-            {
-                _context.Update(list);
-            }
+        public async Task Save(Doctor doctor)
 
-            await _context.SaveChangesAsync();
+        {
+
+            await _doctorRepository.Save(doctor);
+
+            await _unitOfWork.CommitAsync();
+
         }
 
         public async Task Delete(int id)
+
         {
-            var todoList = await _context.Doctors.FindAsync(id);
-            if (todoList != null)
-            {
-                _context.Doctors.Remove(todoList);
-                await _context.SaveChangesAsync();
-            }
+
+            await _doctorRepository.Delete(id);
+
+            await _unitOfWork.CommitAsync();
+
+        }
+
+        public async Task<PagedResult<Doctor>> List(int page, int pageSize, DoctorsSearch search)
+        {
+            return await _doctorRepository.List(page, pageSize);
         }
     }
+
 }

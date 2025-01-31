@@ -1,8 +1,10 @@
 ﻿using KooliProjekt.Data;
 
-using Microsoft.AspNetCore.Mvc;
+using KooliProjekt.Data.Repositories;
 
 using Microsoft.EntityFrameworkCore;
+
+using System.Threading.Tasks;
 
 namespace KooliProjekt.Services
 
@@ -12,13 +14,17 @@ namespace KooliProjekt.Services
 
     {
 
-        private readonly ApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public VisitService(ApplicationDbContext context)
+        private readonly IVisitRepository _visitRepository;
+
+        public VisitService(IUnitOfWork unitOfWork, IVisitRepository visitRepository)
 
         {
 
-            _context = context;
+            _unitOfWork = unitOfWork;
+
+            _visitRepository = visitRepository;
 
         }
 
@@ -26,7 +32,7 @@ namespace KooliProjekt.Services
 
         {
 
-            return await _context.Visits.GetPagedAsync(page, 5);
+            return await _visitRepository.List(page, pageSize);
 
         }
 
@@ -34,31 +40,17 @@ namespace KooliProjekt.Services
 
         {
 
-            return await _context.Visits.FirstOrDefaultAsync(m => m.Id == id);
+            return await _visitRepository.Get(id);
 
         }
 
-        public async Task Save(Visit list)
+        public async Task Save(Visit visit)
 
         {
 
-            if (list.Id == 0)
+            await _visitRepository.Save(visit);
 
-            {
-
-                _context.Add(list);
-
-            }
-
-            else
-
-            {
-
-                _context.Update(list);
-
-            }
-
-            await _context.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
 
         }
 
@@ -66,21 +58,12 @@ namespace KooliProjekt.Services
 
         {
 
-            var Visit = await _context.Visits.FindAsync(id);
+            await _visitRepository.Delete(id);
 
-            if (Visit != null)
-
-            {
-
-                _context.Visits.Remove(Visit);
-
-                await _context.SaveChangesAsync();
-
-            }
+            await _unitOfWork.CommitAsync();
 
         }
 
     }
 
 }
-
