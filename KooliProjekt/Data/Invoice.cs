@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace KooliProjekt.Data
 {
@@ -14,7 +15,7 @@ namespace KooliProjekt.Data
         public decimal Sum { get; set; }
 
         [Required]
-        public Boolean Paid { get; set; }
+        public bool Paid { get; set; }  // Use 'bool' instead of 'Boolean'
 
         [Required]
         public int VisitId { get; set; }

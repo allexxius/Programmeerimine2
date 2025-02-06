@@ -1,85 +1,49 @@
-﻿using KooliProjekt.Data;
-
-using Microsoft.AspNetCore.Mvc;
-
+﻿using System.Threading.Tasks;
+using KooliProjekt.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.Services
-
 {
-
     public class InvoiceService : IInvoiceService
-
     {
-
         private readonly ApplicationDbContext _context;
 
         public InvoiceService(ApplicationDbContext context)
-
         {
-
             _context = context;
-
         }
 
         public async Task<PagedResult<Invoice>> List(int page, int pageSize)
-
         {
-
-            return await _context.Invoices.GetPagedAsync(page, 5);
-
+            return await _context.Invoices.GetPagedAsync(page, 5); // Adjust to 5 if needed
         }
 
         public async Task<Invoice> Get(int id)
-
         {
-
             return await _context.Invoices.FirstOrDefaultAsync(m => m.Id == id);
-
         }
 
-        public async Task Save(Invoice list)
-
+        public async Task Save(Invoice invoice)
         {
-
-            if (list.Id == 0)
-
+            if (invoice.Id == 0)
             {
-
-                _context.Add(list);
-
+                _context.Add(invoice);
             }
-
             else
-
             {
-
-                _context.Update(list);
-
+                _context.Update(invoice);
             }
-
             await _context.SaveChangesAsync();
-
         }
 
         public async Task Delete(int id)
-
         {
-
-            var Invoice = await _context.Invoices.FindAsync(id);
-
-            if (Invoice != null)
-
+            var invoice = await _context.Invoices.FindAsync(id);
+            if (invoice != null)
             {
-
-                _context.Invoices.Remove(Invoice);
-
+                _context.Invoices.Remove(invoice);
                 await _context.SaveChangesAsync();
-
             }
-
         }
-
     }
-
 }
