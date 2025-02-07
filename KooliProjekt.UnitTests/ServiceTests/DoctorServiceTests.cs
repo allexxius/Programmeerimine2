@@ -1,254 +1,134 @@
-﻿using System;
-
-using System.Collections.Generic;
-
-using System.Linq;
-
-using System.Threading.Tasks;
-
-using KooliProjekt.Data;
-
+﻿using KooliProjekt.Data;
 using KooliProjekt.Models;
-
 using KooliProjekt.Search;
-
 using KooliProjekt.Services;
-
-using Microsoft.AspNetCore.Routing;
-
+using KooliProjekt.UnitTests.ServiceTests;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
 
-using Moq;
-
-using NUnit.Framework;
-
-namespace KooliProjekt.Tests.Services
-
+namespace KooliProjekt.UnitTests.ServiceTests
 {
-
-    [TestFixture]
-
-    public class DoctorServiceTests
-
+    public class DoctorServiceTests : ServiceTestBase
     {
-
-        private Mock<ApplicationDbContext> _mockContext;
-
+        private ApplicationDbContext _context;
         private DoctorService _doctorService;
 
-        private Mock<DbSet<Doctor>> _mockSet;
-
-        [SetUp]
-
-        public void SetUp()
-
+        public DoctorServiceTests()
         {
+            _context = DbContext;
+            _doctorService = new DoctorService(_context);
 
-            _mockContext = new Mock<ApplicationDbContext>();
-
-            _mockSet = new Mock<DbSet<Doctor>>();
-
-            _doctorService = new DoctorService(_mockContext.Object);
-
+            // Add test data
+            _context.Doctors.AddRange(new List<Doctor>
+            {
+                new Doctor { Id = 1, Name = "Dr. Smith", Specialization = "Cardiology", UserId = 1 },
+                new Doctor { Id = 2, Name = "Dr. Johnson", Specialization = "Neurology", UserId = 2 },
+                new Doctor { Id = 3, Name = "Dr. Williams", Specialization = "Dermatology", UserId = 3 }
+            });
+            _context.SaveChanges();
         }
 
-        [Test]
-
-        public async Task List_WithoutSearchParameters_ReturnsPagedResult()
-
+        [Fact]
+        public async Task List_WithoutSearchParameters_ReturnsAllDoctors()
         {
+            var page = 1;
+            var pageSize = 10;
 
-            // Arrange
+            var result = await _doctorService.List(page, pageSize);
 
-            var data = new List<Doctor>
-
-            {
-
-                new Doctor { Id = 1, Name = "Dr. Smith" },
-
-                new Doctor { Id = 2, Name = "Dr. Johnson" }
-
-            }.AsQueryable();
-
-            _mockSet.As<IQueryable<Doctor>>().Setup(m => m.Provider).Returns(data.Provider);
-
-            _mockSet.As<IQueryable<Doctor>>().Setup(m => m.Expression).Returns(data.Expression);
-
-            _mockSet.As<IQueryable<Doctor>>().Setup(m => m.ElementType).Returns(data.ElementType);
-
-            _mockSet.As<IQueryable<Doctor>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
-
-            _mockContext.Setup(c => c.Doctors).Returns(_mockSet.Object);
-
-            // Act
-
-            var result = await _doctorService.List(1, 10);
-
-            // Assert
-
-            Assert.IsNotNull(result);
-
-            Assert.AreEqual(2, result.Results.Count());
-
+            Assert.Equal(3, result.Results.Count);
         }
 
-        [Test]
-
-        public async Task List_WithSearchParameters_ReturnsFilteredPagedResult()
-
+        [Fact]
+        public async Task List_WithSearchParameters_ReturnsFilteredDoctors()
         {
-
-            // Arrange
-
-            var data = new List<Doctor>
-
-            {
-
-                new Doctor { Id = 1, Name = "Dr. Smith" },
-
-                new Doctor { Id = 2, Name = "Dr. Johnson" }
-
-            }.AsQueryable();
-
-            _mockSet.As<IQueryable<Doctor>>().Setup(m => m.Provider).Returns(data.Provider);
-
-            _mockSet.As<IQueryable<Doctor>>().Setup(m => m.Expression).Returns(data.Expression);
-
-            _mockSet.As<IQueryable<Doctor>>().Setup(m => m.ElementType).Returns(data.ElementType);
-
-            _mockSet.As<IQueryable<Doctor>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
-
-            _mockContext.Setup(c => c.Doctors).Returns(_mockSet.Object);
-
+            var page = 1;
+            var pageSize = 10;
             var search = new DoctorSearch { Keyword = "Smith" };
 
-            // Act
+            var result = await _doctorService.List(page, pageSize, search);
 
-            var result = await _doctorService.List(1, 10, search);
-
-            // Assert
-
-            Assert.IsNotNull(result);
-
-            Assert.AreEqual(1, result.Results.Count());
-
-            Assert.AreEqual("Dr. Smith", result.Results.First().Name);
-
+            Assert.Equal(1, result.Results.Count);
+            Assert.Equal("Dr. Smith", result.Results.First().Name);
         }
 
-        [Test]
-
-        public async Task Get_ReturnsDoctorById()
-
+        [Fact]
+        public async Task Get_ExistingDoctorId_ReturnsDoctor()
         {
+            var doctorId = 1;
 
-            // Arrange
+            var result = await _doctorService.Get(doctorId);
 
-            var doctor = new Doctor { Id = 1, Name = "Dr. Smith" };
-
-            _mockSet.Setup(m => m.FindAsync(1)).ReturnsAsync(doctor);
-
-            _mockContext.Setup(c => c.Doctors).Returns(_mockSet.Object);
-
-            // Act
-
-            var result = await _doctorService.Get(1);
-
-            // Assert
-
-            Assert.IsNotNull(result);
-
-            Assert.AreEqual("Dr. Smith", result.Name);
-
+            Assert.NotNull(result);
+            Assert.Equal("Dr. Smith", result.Name);
         }
 
-        [Test]
-
-        public async Task Save_AddsNewDoctor()
-
+        [Fact]
+        public async Task Get_NonExistingDoctorId_ReturnsNull()
         {
+            var doctorId = 999;
 
-            // Arrange
+            var result = await _doctorService.Get(doctorId);
 
-            var doctor = new Doctor { Id = 0, Name = "Dr. Smith" };
-
-            _mockSet.Setup(m => m.Add(It.IsAny<Doctor>())).Callback<Doctor>(d => d.Id = 1);
-
-            _mockContext.Setup(c => c.Doctors).Returns(_mockSet.Object);
-
-            _mockContext.Setup(c => c.SaveChangesAsync(default)).ReturnsAsync(1);
-
-            // Act
-
-            await _doctorService.Save(doctor);
-
-            // Assert
-
-            _mockSet.Verify(m => m.Add(It.IsAny<Doctor>()), Times.Once);
-
-            _mockContext.Verify(m => m.SaveChangesAsync(default), Times.Once);
-
-            Assert.AreEqual(1, doctor.Id);
-
+            Assert.Null(result);
         }
 
-        [Test]
-
-        public async Task Save_UpdatesExistingDoctor()
-
+        [Fact]
+        public async Task Save_NewDoctor_AddsDoctorToDatabase()
         {
+            var newDoctor = new Doctor { Name = "Dr. Brown", Specialization = "Pediatrics", UserId = 4 };
 
-            // Arrange
+            await _doctorService.Save(newDoctor);
+            await _context.SaveChangesAsync();  // Ensure changes are persisted
 
-            var doctor = new Doctor { Id = 1, Name = "Dr. Smith" };
+            var result = await _context.Doctors.FindAsync(newDoctor.Id);
 
-            _mockSet.Setup(m => m.Update(It.IsAny<Doctor>()));
-
-            _mockContext.Setup(c => c.Doctors).Returns(_mockSet.Object);
-
-            _mockContext.Setup(c => c.SaveChangesAsync(default)).ReturnsAsync(1);
-
-            // Act
-
-            await _doctorService.Save(doctor);
-
-            // Assert
-
-            _mockSet.Verify(m => m.Update(It.IsAny<Doctor>()), Times.Once);
-
-            _mockContext.Verify(m => m.SaveChangesAsync(default), Times.Once);
-
+            Assert.NotNull(result);
+            Assert.Equal("Dr. Brown", result.Name);
         }
 
-        [Test]
-
-        public async Task Delete_RemovesDoctor()
-
+        [Fact]
+        public async Task Save_ExistingDoctor_UpdatesDoctorInDatabase()
         {
+            var existingDoctor = await _context.Doctors.FindAsync(1);
+            existingDoctor.Name = "Dr. Smith Updated";
 
-            // Arrange
+            await _doctorService.Save(existingDoctor);
+            await _context.SaveChangesAsync();  // Ensure changes are persisted
 
-            var doctor = new Doctor { Id = 1, Name = "Dr. Smith" };
+            var result = await _context.Doctors.FindAsync(1);
 
-
-            _mockSet.Setup(m => m.FindAsync(1)).ReturnsAsync(doctor);
-
-            _mockContext.Setup(c => c.Doctors).Returns(_mockSet.Object);
-
-            _mockContext.Setup(c => c.SaveChangesAsync(default)).ReturnsAsync(1);
-
-            // Act
-
-            await _doctorService.Delete(1);
-
-            // Assert
-
-            _mockSet.Verify(m => m.Remove(It.IsAny<Doctor>()), Times.Once);
-
-            _mockContext.Verify(m => m.SaveChangesAsync(default), Times.Once);
-
+            Assert.NotNull(result);
+            Assert.Equal("Dr. Smith Updated", result.Name);
         }
 
+        [Fact]
+        public async Task Delete_ExistingDoctorId_RemovesDoctorFromDatabase()
+        {
+            var doctorId = 1;
+
+            await _doctorService.Delete(doctorId);
+            await _context.SaveChangesAsync();  // Ensure changes are persisted
+
+            var result = await _context.Doctors.FindAsync(doctorId);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task Delete_NonExistingDoctorId_DoesNothing()
+        {
+            var doctorId = 999;
+
+            await _doctorService.Delete(doctorId);
+            await _context.SaveChangesAsync();  // Ensure changes are persisted
+
+            var result = await _context.Doctors.FindAsync(doctorId);
+
+            Assert.Null(result);
+        }
     }
-
 }
