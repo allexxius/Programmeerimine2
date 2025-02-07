@@ -6,6 +6,7 @@ using KooliProjekt.Controllers;
 using KooliProjekt.Data;
 using KooliProjekt.Models;
 using KooliProjekt.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -284,6 +285,21 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.NotNull(result);
             Assert.Equal(visit, result.Model);
         }
+
+        [Fact]
+        public void Visit_User_ShouldNotBeNull()
+        {
+            // Arrange
+            var visit = new Visit { Id = 1, Duration = 30, User = new IdentityUser { UserName = "TestUser" } };
+
+            // Act
+            var user = visit.User;
+
+            // Assert
+            Assert.NotNull(user);  // This ensures that the User property has been correctly initialized
+            Assert.Equal("TestUser", user.UserName);  // Verifying that the user is correctly populated
+        }
+
 
         // DeleteConfirmed (POST) Action Test
         [Fact]

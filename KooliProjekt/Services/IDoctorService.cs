@@ -20,5 +20,7 @@ namespace KooliProjekt.Services
 
         // Delete meetod arsti kustutamiseks
         Task Delete(int id);
+        Task Update(Doctor doctor);
+        void Add(Doctor doctor);
     }
 }

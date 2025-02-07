@@ -310,7 +310,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             var result = await _controller.Edit(id) as ViewResult;
 
-            Assert.NotNull(result); // Kui DoctorExists tagastab true, peaks Edit meetod tagastama vaate
+            Assert.NotNull(result);
         }
 
         [Fact]
@@ -324,7 +324,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             var result = await _controller.Edit(id);
 
-            Assert.IsType<NotFoundResult>(result); // Kui DoctorExists tagastab false, peaks Edit meetod tagastama NotFound
+            Assert.IsType<NotFoundResult>(result);
         }
     }
 }

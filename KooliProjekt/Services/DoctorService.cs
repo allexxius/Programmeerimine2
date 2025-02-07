@@ -68,5 +68,15 @@ namespace KooliProjekt.Services
                 await _context.SaveChangesAsync();
             }
         }
+
+        public Task Update(Doctor doctor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Add(Doctor doctor)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
