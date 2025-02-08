@@ -7,6 +7,9 @@ using KooliProjekt.Services;
 using Microsoft.EntityFrameworkCore;
 using KooliProjekt.Data;
 using KooliProjekt.Models;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("KooliProjekt.UnitTests")]
 
 namespace KooliProjekt.Controllers
 {
@@ -22,7 +25,7 @@ namespace KooliProjekt.Controllers
         // GET: Visits
         public async Task<IActionResult> Index(int page = 1)
         {
-            var visits = await _visitService.List(page, 10); // Use List method from the service
+            var visits = await _visitService.List(page, 10);
             return View(visits);
         }
 
@@ -34,7 +37,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var visit = await _visitService.Get(id.Value); // Use the Get method
+            var visit = await _visitService.Get(id.Value);
             if (visit == null)
             {
                 return NotFound();
@@ -56,7 +59,7 @@ namespace KooliProjekt.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _visitService.Save(visit); // Use Save method from the service
+                await _visitService.Save(visit);
                 return RedirectToAction(nameof(Index));
             }
             return View(visit);
@@ -70,7 +73,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var visit = await _visitService.Get(id.Value); // Use the Get method
+            var visit = await _visitService.Get(id.Value);
             if (visit == null)
             {
                 return NotFound();
@@ -93,7 +96,7 @@ namespace KooliProjekt.Controllers
             {
                 try
                 {
-                    await _visitService.Save(visit); // Use Save method to update
+                    await _visitService.Save(visit);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -119,7 +122,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var visit = await _visitService.Get(id.Value); // Use the Get method
+            var visit = await _visitService.Get(id.Value);
             if (visit == null)
             {
                 return NotFound();
@@ -133,13 +136,13 @@ namespace KooliProjekt.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _visitService.Delete(id); // Use Delete method from the service
+            await _visitService.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool VisitExists(int id)
+        public bool VisitExists(int id)
         {
-            var visit = _visitService.Get(id).Result; // Check using the Get method
+            var visit = _visitService.Get(id).Result;
             return visit != null;
         }
     }

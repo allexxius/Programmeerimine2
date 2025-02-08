@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using KooliProjekt.Data;
 using KooliProjekt.Search;
 using KooliProjekt.Models;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("KooliProjekt.UnitTests")]
 
 namespace KooliProjekt.Controllers
 {
@@ -106,7 +109,7 @@ namespace KooliProjekt.Controllers
                 {
                     if (!DoctorExists(doctor.Id))
                     {
-                        return NotFound();
+                        throw;
                     }
                     else
                     {
@@ -145,7 +148,7 @@ namespace KooliProjekt.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DoctorExists(int id)
+        internal bool DoctorExists(int id)
         {
             return _doctorService.Get(id).Result != null;
         }

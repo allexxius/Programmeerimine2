@@ -25,7 +25,7 @@ namespace KooliProjekt.Controllers
         // GET: Times
         public async Task<IActionResult> Index(int page = 1)
         {
-            var times = await _timeService.List(page, 10); // Use List method from the service
+            var times = await _timeService.List(page, 10);
             return View(times);
         }
 
@@ -37,7 +37,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var time = await _timeService.Get(id.Value); // Use the Get method
+            var time = await _timeService.Get(id.Value);
             if (time == null)
             {
                 return NotFound();
@@ -59,7 +59,7 @@ namespace KooliProjekt.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _timeService.Save(time); // Use Save method from the service
+                await _timeService.Save(time);
                 return RedirectToAction(nameof(Index));
             }
             return View(time);
@@ -73,7 +73,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var time = await _timeService.Get(id.Value); // Use the Get method
+            var time = await _timeService.Get(id.Value);
             if (time == null)
             {
                 return NotFound();
@@ -96,7 +96,7 @@ namespace KooliProjekt.Controllers
             {
                 try
                 {
-                    await _timeService.Save(time); // Use Save method to update
+                    await _timeService.Save(time);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -122,7 +122,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var time = await _timeService.Get(id.Value); // Use the Get method
+            var time = await _timeService.Get(id.Value);
             if (time == null)
             {
                 return NotFound();
@@ -136,13 +136,13 @@ namespace KooliProjekt.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _timeService.Delete(id); // Use Delete method from the service
+            await _timeService.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
         internal bool TimeExists(int id)
         {
-            var time = _timeService.Get(id).Result; // Check using the Get method
+            var time = _timeService.Get(id).Result;
             return time != null;
         }
     }
