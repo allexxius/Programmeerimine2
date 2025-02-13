@@ -5,26 +5,26 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KooliProjekt.Controllers
 {
-    [Route("api/Doctors")]
+    [Route("api/InvoiceLines")]
     [ApiController]
-    public class DoctorsApiController : ControllerBase
+    public class InvoiceLinesApiController : ControllerBase
     {
-        private readonly IDoctorService _service;
+        private readonly IInvoiceLineService _service;
 
-        public DoctorsApiController(IDoctorService service)
+        public InvoiceLinesApiController(IInvoiceLineService service)
         {
             _service = service;
         }
 
-        // GET: api/<DoctorsApiController>
+        // GET: api/<InvoiceLinesApiController>
         [HttpGet]
-        public async Task<IEnumerable<Doctor>> Get()
+        public async Task<IEnumerable<InvoiceLine>> Get()
         {
             var result = await _service.List(1, 10000);
             return result.Results;
         }
 
-        // GET api/<DoctorsApiController>/5
+        // GET api/<InvoiceLinesApiController>/5
         [HttpGet("{id}")]
         public async Task<object> Get(int id)
         {
@@ -37,18 +37,18 @@ namespace KooliProjekt.Controllers
             return list;
         }
 
-        // POST api/<DoctorsApiController>
+        // POST api/<InvoiceLinesApiController>
         [HttpPost]
-        public async Task<object> Post([FromBody] Doctor list)
+        public async Task<object> Post([FromBody] InvoiceLine list)
         {
             await _service.Save(list);
 
             return Ok(list);
         }
 
-        // PUT api/<DoctorsApiController>/5
+        // PUT api/<InvoiceLinesApiController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] Doctor list)
+        public async Task<IActionResult> Put(int id, [FromBody] InvoiceLine list)
         {
             if (id != list.Id)
             {
@@ -60,7 +60,7 @@ namespace KooliProjekt.Controllers
             return Ok();
         }
 
-        // DELETE api/<DoctorsApiController>/5
+        // DELETE api/<InvoiceLinesApiController>/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

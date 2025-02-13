@@ -1,30 +1,31 @@
-﻿using KooliProjekt.Data;
+﻿using System.ComponentModel;
+using KooliProjekt.Data;
 using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace KooliProjekt.Controllers
 {
-    [Route("api/Doctors")]
+    [Route("api/Visits")]
     [ApiController]
-    public class DoctorsApiController : ControllerBase
+    public class VisitsApiController : ControllerBase
     {
-        private readonly IDoctorService _service;
+        private readonly IVisitService _service;
 
-        public DoctorsApiController(IDoctorService service)
+        public VisitsApiController(IVisitService service)
         {
             _service = service;
         }
 
-        // GET: api/<DoctorsApiController>
+        // GET: api/<VisitsApiController>
         [HttpGet]
-        public async Task<IEnumerable<Doctor>> Get()
+        public async Task<IEnumerable<Visit>> Get()
         {
             var result = await _service.List(1, 10000);
             return result.Results;
         }
 
-        // GET api/<DoctorsApiController>/5
+        // GET api/<VisitsApiController>/5
         [HttpGet("{id}")]
         public async Task<object> Get(int id)
         {
@@ -37,18 +38,18 @@ namespace KooliProjekt.Controllers
             return list;
         }
 
-        // POST api/<DoctorsApiController>
+        // POST api/<VisitsApiController>
         [HttpPost]
-        public async Task<object> Post([FromBody] Doctor list)
+        public async Task<object> Post([FromBody] Visit list)
         {
             await _service.Save(list);
 
             return Ok(list);
         }
 
-        // PUT api/<DoctorsApiController>/5
+        // PUT api/<VisitsApiController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] Doctor list)
+        public async Task<IActionResult> Put(int id, [FromBody] Visit list)
         {
             if (id != list.Id)
             {
@@ -60,7 +61,7 @@ namespace KooliProjekt.Controllers
             return Ok();
         }
 
-        // DELETE api/<DoctorsApiController>/5
+        // DELETE api/<VisitsApiController>/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
