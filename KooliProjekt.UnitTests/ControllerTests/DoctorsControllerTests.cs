@@ -8,6 +8,7 @@ using Moq;
 using Xunit;
 using KooliProjekt.Data;
 using KooliProjekt.Search;
+using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.UnitTests.ControllerTests
 {
@@ -211,7 +212,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         }
 
         [Fact]
-        public async Task Edit_ShouldReturnViewWithDoctor_WhenModelStateIsInvalid()
+        public async Task Edit_ShouldReturnViewWithModel_WhenModelStateIsInvalid()
         {
             int id = 1;
             var doctor = new Doctor { Id = id, Name = "Test Doctor" };
@@ -239,6 +240,40 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.NotNull(result);
             Assert.Equal("Index", result.ActionName);
             _doctorServiceMock.Verify(x => x.Save(doctor), Times.Once);
+        }
+
+        [Fact]
+        public async Task Edit_ShouldThrowDbUpdateConcurrencyException_WhenDoctorDoesNotExist()
+        {
+            int id = 1;
+            var doctor = new Doctor { Id = id, Name = "Test Doctor" };
+
+            _doctorServiceMock
+                .Setup(x => x.Save(doctor))
+                .ThrowsAsync(new DbUpdateConcurrencyException());
+
+            _doctorServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync((Doctor)null);
+
+            await Assert.ThrowsAsync<DbUpdateConcurrencyException>(() => _controller.Edit(id, doctor));
+        }
+
+        [Fact]
+        public async Task Edit_ShouldRethrowDbUpdateConcurrencyException_WhenDoctorExists()
+        {
+            int id = 1;
+            var doctor = new Doctor { Id = id, Name = "Test Doctor" };
+
+            _doctorServiceMock
+                .Setup(x => x.Save(doctor))
+                .ThrowsAsync(new DbUpdateConcurrencyException());
+
+            _doctorServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync(doctor);
+
+            await Assert.ThrowsAsync<DbUpdateConcurrencyException>(() => _controller.Edit(id, doctor));
         }
 
         [Fact]
@@ -299,7 +334,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         }
 
         [Fact]
-        public async Task DoctorExists_ShouldReturnTrue_WhenDoctorExists()
+        public void DoctorExists_ShouldReturnTrue_WhenDoctorExists()
         {
             int id = 1;
             var doctor = new Doctor { Id = id, Name = "Test Doctor" };
@@ -308,13 +343,13 @@ namespace KooliProjekt.UnitTests.ControllerTests
                 .Setup(x => x.Get(id))
                 .ReturnsAsync(doctor);
 
-            var result = await _controller.Edit(id) as ViewResult;
+            var result = _controller.DoctorExists(id);
 
-            Assert.NotNull(result); // Kui DoctorExists tagastab true, peaks Edit meetod tagastama vaate
+            Assert.True(result);
         }
 
         [Fact]
-        public async Task DoctorExists_ShouldReturnFalse_WhenDoctorDoesNotExist()
+        public void DoctorExists_ShouldReturnFalse_WhenDoctorDoesNotExist()
         {
             int id = 1;
 
@@ -322,9 +357,9 @@ namespace KooliProjekt.UnitTests.ControllerTests
                 .Setup(x => x.Get(id))
                 .ReturnsAsync((Doctor)null);
 
-            var result = await _controller.Edit(id);
+            var result = _controller.DoctorExists(id);
 
-            Assert.IsType<NotFoundResult>(result); // Kui DoctorExists tagastab false, peaks Edit meetod tagastama NotFound
+            Assert.False(result);
         }
     }
 }

@@ -9,6 +9,7 @@ using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
+using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.UnitTests.ControllerTests
 {
@@ -239,6 +240,47 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.IsType<NotFoundResult>(result);
         }
 
+        [Fact]
+        public async Task Edit_ShouldRethrowDbUpdateConcurrencyException_WhenTimeExists()
+        {
+            // Arrange
+            int id = 1;
+            var time = new Time { Id = id, DoctorId = 1 };
+
+            _timeServiceMock
+                .Setup(x => x.Save(time))
+                .ThrowsAsync(new DbUpdateConcurrencyException());
+
+            _timeServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync(time);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<DbUpdateConcurrencyException>(() => _controller.Edit(id, time));
+        }
+
+        [Fact]
+        public async Task Edit_ShouldReturnNotFound_WhenTimeDoesNotExist_AndConcurrencyExceptionOccurs()
+        {
+            // Arrange
+            int id = 1;
+            var time = new Time { Id = id, DoctorId = 1 };
+
+            _timeServiceMock
+                .Setup(x => x.Save(time))
+                .ThrowsAsync(new DbUpdateConcurrencyException());
+
+            _timeServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync((Time)null);
+
+            // Act
+            var result = await _controller.Edit(id, time);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
         // Delete (GET) Action Tests
         [Fact]
         public async Task Delete_ShouldReturnNotFound_WhenIdIsNull()
@@ -308,7 +350,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
         // TimeExists Helper Method Test
         [Fact]
-        public async Task TimeExists_ShouldReturnTrue_WhenTimeExists()
+        public void TimeExists_ShouldReturnTrue_WhenTimeExists()
         {
             // Arrange
             int id = 1;
@@ -325,7 +367,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         }
 
         [Fact]
-        public async Task TimeExists_ShouldReturnFalse_WhenTimeDoesNotExist()
+        public void TimeExists_ShouldReturnFalse_WhenTimeDoesNotExist()
         {
             // Arrange
             int id = 1;

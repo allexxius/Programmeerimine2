@@ -9,6 +9,7 @@ using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
+using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.UnitTests.ControllerTests
 {
@@ -23,7 +24,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
             _controller = new VisitsController(_visitServiceMock.Object);
         }
 
-        // Index Action Tests
+        // Index Action Test
         [Fact]
         public async Task Index_ShouldReturnViewWithData()
         {
@@ -237,6 +238,47 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.IsType<NotFoundResult>(result);
         }
 
+        [Fact]
+        public async Task Edit_ShouldRethrowDbUpdateConcurrencyException_WhenVisitExists()
+        {
+            // Arrange
+            int id = 1;
+            var visit = new Visit { Id = id, Duration = 30 };
+
+            _visitServiceMock
+                .Setup(x => x.Save(visit))
+                .ThrowsAsync(new DbUpdateConcurrencyException());
+
+            _visitServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync(visit);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<DbUpdateConcurrencyException>(() => _controller.Edit(id, visit));
+        }
+
+        [Fact]
+        public async Task Edit_ShouldReturnNotFound_WhenVisitDoesNotExist_AndConcurrencyExceptionOccurs()
+        {
+            // Arrange
+            int id = 1;
+            var visit = new Visit { Id = id, Duration = 30 };
+
+            _visitServiceMock
+                .Setup(x => x.Save(visit))
+                .ThrowsAsync(new DbUpdateConcurrencyException());
+
+            _visitServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync((Visit)null);
+
+            // Act
+            var result = await _controller.Edit(id, visit);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
         // Delete (GET) Action Tests
         [Fact]
         public async Task Delete_ShouldReturnNotFound_WhenIdIsNull()
@@ -301,6 +343,40 @@ namespace KooliProjekt.UnitTests.ControllerTests
             // Assert
             Assert.NotNull(result);
             Assert.Equal("Index", result.ActionName);
+        }
+
+        // VisitExists Helper Method Test
+        [Fact]
+        public void VisitExists_ShouldReturnTrue_WhenVisitExists()
+        {
+            // Arrange
+            int id = 1;
+            var visit = new Visit { Id = id, Duration = 30 };
+            _visitServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync(visit);
+
+            // Act
+            var result = _controller.VisitExists(id);
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void VisitExists_ShouldReturnFalse_WhenVisitDoesNotExist()
+        {
+            // Arrange
+            int id = 1;
+            _visitServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync((Visit)null);
+
+            // Act
+            var result = _controller.VisitExists(id);
+
+            // Assert
+            Assert.False(result);
         }
     }
 }
