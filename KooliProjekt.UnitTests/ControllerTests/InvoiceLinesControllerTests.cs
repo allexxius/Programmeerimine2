@@ -9,6 +9,7 @@ using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
+using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.UnitTests.ControllerTests
 {
@@ -35,6 +36,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
                 new InvoiceLine { Id = 2, Service = "Test 2" }
             };
             var pagedResult = new PagedResult<InvoiceLine> { Results = data };
+
             _invoiceLineServiceMock
                 .Setup(x => x.List(page, It.IsAny<int>()))
                 .ReturnsAsync(pagedResult);
@@ -66,6 +68,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
+
             _invoiceLineServiceMock
                 .Setup(x => x.Get(id))
                 .ReturnsAsync((InvoiceLine)null);
@@ -83,6 +86,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
             // Arrange
             int id = 1;
             var invoiceLine = new InvoiceLine { Id = id, Service = "Test Service" };
+
             _invoiceLineServiceMock
                 .Setup(x => x.Get(id))
                 .ReturnsAsync(invoiceLine);
@@ -107,6 +111,42 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.NotNull(result);
         }
 
+        // Create (POST) Action Tests
+        [Fact]
+        public async Task Create_ShouldCallSaveMethod_AndRedirectToIndex_WhenModelStateIsValid()
+        {
+            // Arrange
+            var invoiceLine = new InvoiceLine { Id = 1, Service = "Test Service" };
+
+            _invoiceLineServiceMock
+                .Setup(x => x.Save(invoiceLine))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.Create(invoiceLine) as RedirectToActionResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Index", result.ActionName);
+            _invoiceLineServiceMock.Verify(x => x.Save(invoiceLine), Times.Once);
+        }
+
+        [Fact]
+        public async Task Create_ShouldReturnViewWithModel_WhenModelStateIsInvalid()
+        {
+            // Arrange
+            var invoiceLine = new InvoiceLine { Id = 1, Service = "Test Service" };
+            _controller.ModelState.AddModelError("Service", "Required");
+
+            // Act
+            var result = await _controller.Create(invoiceLine) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotNull(result.Model);
+            Assert.Equal(invoiceLine, result.Model);
+        }
+
         // Edit (GET) Action Tests
         [Fact]
         public async Task Edit_ShouldReturnNotFound_WhenIdIsNull()
@@ -126,6 +166,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
+
             _invoiceLineServiceMock
                 .Setup(x => x.Get(id))
                 .ReturnsAsync((InvoiceLine)null);
@@ -143,6 +184,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
             // Arrange
             int id = 1;
             var invoiceLine = new InvoiceLine { Id = id, Service = "Test Service" };
+
             _invoiceLineServiceMock
                 .Setup(x => x.Get(id))
                 .ReturnsAsync(invoiceLine);
@@ -154,74 +196,6 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.NotNull(result);
             Assert.NotNull(result.Model);
             Assert.Equal(invoiceLine, result.Model);
-        }
-
-        // Delete (GET) Action Tests
-        [Fact]
-        public async Task Delete_ShouldReturnNotFound_WhenIdIsNull()
-        {
-            // Arrange
-            int? id = null;
-
-            // Act
-            var result = await _controller.Delete(id);
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result);
-        }
-
-        [Fact]
-        public async Task Delete_ShouldReturnNotFound_WhenInvoiceLineDoesNotExist()
-        {
-            // Arrange
-            int id = 1;
-            _invoiceLineServiceMock
-                .Setup(x => x.Get(id))
-                .ReturnsAsync((InvoiceLine)null);
-
-            // Act
-            var result = await _controller.Delete(id);
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result);
-        }
-
-        [Fact]
-        public async Task Delete_ShouldReturnViewWithInvoiceLine_WhenInvoiceLineExists()
-        {
-            // Arrange
-            int id = 1;
-            var invoiceLine = new InvoiceLine { Id = id, Service = "Test Service" };
-            _invoiceLineServiceMock
-                .Setup(x => x.Get(id))
-                .ReturnsAsync(invoiceLine);
-
-            // Act
-            var result = await _controller.Delete(id) as ViewResult;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.NotNull(result.Model);
-            Assert.Equal(invoiceLine, result.Model);
-        }
-
-        // DeleteConfirmed (POST) Action Tests
-        [Fact]
-        public async Task DeleteConfirmed_ShouldCallDeleteMethod_AndRedirectToIndex()
-        {
-            // Arrange
-            int id = 1;
-            _invoiceLineServiceMock
-                .Setup(x => x.Delete(id))
-                .Returns(Task.CompletedTask);
-
-            // Act
-            var result = await _controller.DeleteConfirmed(id) as RedirectToActionResult;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("Index", result.ActionName);
-            _invoiceLineServiceMock.Verify(x => x.Delete(id), Times.Once);
         }
 
         // Edit (POST) Action Tests
@@ -262,6 +236,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
             // Arrange
             int id = 1;
             var invoiceLine = new InvoiceLine { Id = id, Service = "Test Service" };
+
             _invoiceLineServiceMock
                 .Setup(x => x.Save(invoiceLine))
                 .Returns(Task.CompletedTask);
@@ -273,6 +248,154 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.NotNull(result);
             Assert.Equal("Index", result.ActionName);
             _invoiceLineServiceMock.Verify(x => x.Save(invoiceLine), Times.Once);
+        }
+
+        [Fact]
+        public async Task Edit_ShouldRethrowDbUpdateConcurrencyException_WhenInvoiceLineExists()
+        {
+            // Arrange
+            int id = 1;
+            var invoiceLine = new InvoiceLine { Id = id, Service = "Test Service" };
+
+            _invoiceLineServiceMock
+                .Setup(x => x.Save(invoiceLine))
+                .ThrowsAsync(new DbUpdateConcurrencyException());
+
+            _invoiceLineServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync(invoiceLine);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<DbUpdateConcurrencyException>(() => _controller.Edit(id, invoiceLine));
+        }
+
+        [Fact]
+        public async Task Edit_ShouldReturnNotFound_WhenInvoiceLineDoesNotExist_AndConcurrencyExceptionOccurs()
+        {
+            // Arrange
+            int id = 1;
+            var invoiceLine = new InvoiceLine { Id = id, Service = "Test Service" };
+
+            _invoiceLineServiceMock
+                .Setup(x => x.Save(invoiceLine))
+                .ThrowsAsync(new DbUpdateConcurrencyException());
+
+            _invoiceLineServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync((InvoiceLine)null);
+
+            // Act
+            var result = await _controller.Edit(id, invoiceLine);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        // Delete (GET) Action Tests
+        [Fact]
+        public async Task Delete_ShouldReturnNotFound_WhenIdIsNull()
+        {
+            // Arrange
+            int? id = null;
+
+            // Act
+            var result = await _controller.Delete(id);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Delete_ShouldReturnNotFound_WhenInvoiceLineDoesNotExist()
+        {
+            // Arrange
+            int id = 1;
+
+            _invoiceLineServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync((InvoiceLine)null);
+
+            // Act
+            var result = await _controller.Delete(id);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Delete_ShouldReturnViewWithInvoiceLine_WhenInvoiceLineExists()
+        {
+            // Arrange
+            int id = 1;
+            var invoiceLine = new InvoiceLine { Id = id, Service = "Test Service" };
+
+            _invoiceLineServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync(invoiceLine);
+
+            // Act
+            var result = await _controller.Delete(id) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotNull(result.Model);
+            Assert.Equal(invoiceLine, result.Model);
+        }
+
+        // DeleteConfirmed (POST) Action Tests
+        [Fact]
+        public async Task DeleteConfirmed_ShouldCallDeleteMethod_AndRedirectToIndex()
+        {
+            // Arrange
+            int id = 1;
+
+            _invoiceLineServiceMock
+                .Setup(x => x.Delete(id))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.DeleteConfirmed(id) as RedirectToActionResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Index", result.ActionName);
+            _invoiceLineServiceMock.Verify(x => x.Delete(id), Times.Once);
+        }
+
+        // DocumentExists Method Tests
+        [Fact]
+        public void DocumentExists_ShouldReturnTrue_WhenInvoiceLineExists()
+        {
+            // Arrange
+            int id = 1;
+            var invoiceLine = new InvoiceLine { Id = id, Service = "Test Service" };
+
+            _invoiceLineServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync(invoiceLine);
+
+            // Act
+            var result = _controller.DocumentExists(id);
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void DocumentExists_ShouldReturnFalse_WhenInvoiceLineDoesNotExist()
+        {
+            // Arrange
+            int id = 1;
+
+            _invoiceLineServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync((InvoiceLine)null);
+
+            // Act
+            var result = _controller.DocumentExists(id);
+
+            // Assert
+            Assert.False(result);
         }
     }
 }

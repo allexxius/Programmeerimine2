@@ -9,6 +9,7 @@ using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
+using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.UnitTests.ControllerTests
 {
@@ -35,6 +36,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
                 new Document { ID = 2, Type = "Test 2" }
             };
             var pagedResult = new PagedResult<Document> { Results = data };
+
             _documentServiceMock
                 .Setup(x => x.List(page, It.IsAny<int>()))
                 .ReturnsAsync(pagedResult);
@@ -66,6 +68,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
+
             _documentServiceMock
                 .Setup(x => x.Get(id))
                 .ReturnsAsync((Document)null);
@@ -83,6 +86,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
             // Arrange
             int id = 1;
             var document = new Document { ID = id, Type = "Test Document" };
+
             _documentServiceMock
                 .Setup(x => x.Get(id))
                 .ReturnsAsync(document);
@@ -129,6 +133,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             var document = new Document { ID = 1, Type = "Test Document" };
+
             _documentServiceMock
                 .Setup(x => x.Save(document))
                 .Returns(Task.CompletedTask);
@@ -161,6 +166,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
+
             _documentServiceMock
                 .Setup(x => x.Get(id))
                 .ReturnsAsync((Document)null);
@@ -178,6 +184,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
             // Arrange
             int id = 1;
             var document = new Document { ID = id, Type = "Test Document" };
+
             _documentServiceMock
                 .Setup(x => x.Get(id))
                 .ReturnsAsync(document);
@@ -229,6 +236,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
             // Arrange
             int id = 1;
             var document = new Document { ID = id, Type = "Test Document" };
+
             _documentServiceMock
                 .Setup(x => x.Save(document))
                 .Returns(Task.CompletedTask);
@@ -240,6 +248,47 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.NotNull(result);
             Assert.Equal("Index", result.ActionName);
             _documentServiceMock.Verify(x => x.Save(document), Times.Once);
+        }
+
+        [Fact]
+        public async Task Edit_ShouldRethrowDbUpdateConcurrencyException_WhenDocumentExists()
+        {
+            // Arrange
+            int id = 1;
+            var document = new Document { ID = id, Type = "Test Document" };
+
+            _documentServiceMock
+                .Setup(x => x.Save(document))
+                .ThrowsAsync(new DbUpdateConcurrencyException());
+
+            _documentServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync(document);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<DbUpdateConcurrencyException>(() => _controller.Edit(id, document));
+        }
+
+        [Fact]
+        public async Task Edit_ShouldReturnNotFound_WhenDocumentDoesNotExist_AndConcurrencyExceptionOccurs()
+        {
+            // Arrange
+            int id = 1;
+            var document = new Document { ID = id, Type = "Test Document" };
+
+            _documentServiceMock
+                .Setup(x => x.Save(document))
+                .ThrowsAsync(new DbUpdateConcurrencyException());
+
+            _documentServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync((Document)null);
+
+            // Act
+            var result = await _controller.Edit(id, document);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
         }
 
         // Delete (GET) Action Tests
@@ -261,6 +310,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
+
             _documentServiceMock
                 .Setup(x => x.Get(id))
                 .ReturnsAsync((Document)null);
@@ -278,6 +328,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
             // Arrange
             int id = 1;
             var document = new Document { ID = id, Type = "Test Document" };
+
             _documentServiceMock
                 .Setup(x => x.Get(id))
                 .ReturnsAsync(document);
@@ -297,6 +348,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
+
             _documentServiceMock
                 .Setup(x => x.Delete(id))
                 .Returns(Task.CompletedTask);
@@ -308,6 +360,42 @@ namespace KooliProjekt.UnitTests.ControllerTests
             Assert.NotNull(result);
             Assert.Equal("Index", result.ActionName);
             _documentServiceMock.Verify(x => x.Delete(id), Times.Once);
+        }
+
+        // DocumentExists Method Tests
+        [Fact]
+        public void DocumentExists_ShouldReturnTrue_WhenDocumentExists()
+        {
+            // Arrange
+            int id = 1;
+            var document = new Document { ID = id, Type = "Test Document" };
+
+            _documentServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync(document);
+
+            // Act
+            var result = _controller.DocumentExists(id);
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void DocumentExists_ShouldReturnFalse_WhenDocumentDoesNotExist()
+        {
+            // Arrange
+            int id = 1;
+
+            _documentServiceMock
+                .Setup(x => x.Get(id))
+                .ReturnsAsync((Document)null);
+
+            // Act
+            var result = _controller.DocumentExists(id);
+
+            // Assert
+            Assert.False(result);
         }
     }
 }

@@ -14,6 +14,12 @@ using Microsoft.EntityFrameworkCore;
 
 using KooliProjekt.Data;
 
+using KooliProjekt.Models;
+
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("KooliProjekt.UnitTests")]
+
 namespace KooliProjekt.Controllers
 
 {
@@ -38,7 +44,7 @@ namespace KooliProjekt.Controllers
 
         {
 
-            var invoices = await _invoiceService.List(page, 10); // Use List method from the service
+            var invoices = await _invoiceService.List(page, 10);
 
             return View(invoices);
 
@@ -58,7 +64,7 @@ namespace KooliProjekt.Controllers
 
             }
 
-            var invoice = await _invoiceService.Get(id.Value); // Use the Get method
+            var invoice = await _invoiceService.Get(id.Value);
 
             if (invoice == null)
 
@@ -96,7 +102,7 @@ namespace KooliProjekt.Controllers
 
             {
 
-                await _invoiceService.Save(invoice); // Use Save method from the service
+                await _invoiceService.Save(invoice);
 
                 return RedirectToAction(nameof(Index));
 
@@ -120,7 +126,7 @@ namespace KooliProjekt.Controllers
 
             }
 
-            var invoice = await _invoiceService.Get(id.Value); // Use the Get method
+            var invoice = await _invoiceService.Get(id.Value);
 
             if (invoice == null)
 
@@ -160,7 +166,7 @@ namespace KooliProjekt.Controllers
 
                 {
 
-                    await _invoiceService.Save(invoice); // Use Save method to update
+                    await _invoiceService.Save(invoice);
 
                 }
 
@@ -208,7 +214,7 @@ namespace KooliProjekt.Controllers
 
             }
 
-            var invoice = await _invoiceService.Get(id.Value); // Use the Get method
+            var invoice = await _invoiceService.Get(id.Value);
 
             if (invoice == null)
 
@@ -232,17 +238,17 @@ namespace KooliProjekt.Controllers
 
         {
 
-            await _invoiceService.Delete(id); // Use Delete method from the service
+            await _invoiceService.Delete(id);
 
             return RedirectToAction(nameof(Index));
 
         }
 
-        private bool InvoiceExists(int id)
+        public bool InvoiceExists(int id)
 
         {
 
-            var invoice = _invoiceService.Get(id).Result; // Check using the Get method
+            var invoice = _invoiceService.Get(id).Result;
 
             return invoice != null;
 
@@ -251,4 +257,3 @@ namespace KooliProjekt.Controllers
     }
 
 }
-
