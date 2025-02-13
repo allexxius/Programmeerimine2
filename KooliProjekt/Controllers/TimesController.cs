@@ -44,7 +44,7 @@ namespace KooliProjekt.Controllers
 
         {
 
-            var times = await _timeService.List(page, 10); // Use List method from the service
+            var times = await _timeService.List(page, 10);
 
             return View(times);
 
@@ -64,7 +64,7 @@ namespace KooliProjekt.Controllers
 
             }
 
-            var time = await _timeService.Get(id.Value); // Use the Get method
+            var time = await _timeService.Get(id.Value);
 
             if (time == null)
 
@@ -102,7 +102,7 @@ namespace KooliProjekt.Controllers
 
             {
 
-                await _timeService.Save(time); // Use Save method from the service
+                await _timeService.Save(time);
 
                 return RedirectToAction(nameof(Index));
 
@@ -126,7 +126,7 @@ namespace KooliProjekt.Controllers
 
             }
 
-            var time = await _timeService.Get(id.Value); // Use the Get method
+            var time = await _timeService.Get(id.Value);
 
             if (time == null)
 
@@ -166,7 +166,7 @@ namespace KooliProjekt.Controllers
 
                 {
 
-                    await _timeService.Save(time); // Use Save method to update
+                    await _timeService.Save(time);
 
                 }
 
@@ -214,7 +214,7 @@ namespace KooliProjekt.Controllers
 
             }
 
-            var time = await _timeService.Get(id.Value); // Use the Get method
+            var time = await _timeService.Get(id.Value);
 
             if (time == null)
 
@@ -238,7 +238,7 @@ namespace KooliProjekt.Controllers
 
         {
 
-            await _timeService.Delete(id); // Use Delete method from the service
+            await _timeService.Delete(id);
 
             return RedirectToAction(nameof(Index));
 
@@ -248,7 +248,7 @@ namespace KooliProjekt.Controllers
 
         {
 
-            var time = _timeService.Get(id).Result; // Check using the Get method
+            var time = _timeService.Get(id).Result;
 
             return time != null;
 

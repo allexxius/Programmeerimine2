@@ -18,6 +18,10 @@ using KooliProjekt.Search;
 
 using KooliProjekt.Models;
 
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("KooliProjekt.UnitTests")]
+
 namespace KooliProjekt.Controllers
 
 {
@@ -184,7 +188,7 @@ namespace KooliProjekt.Controllers
 
                     {
 
-                        return NotFound();
+                        throw;
 
                     }
 
@@ -250,7 +254,7 @@ namespace KooliProjekt.Controllers
 
         }
 
-        private bool DoctorExists(int id)
+        internal bool DoctorExists(int id)
 
         {
 

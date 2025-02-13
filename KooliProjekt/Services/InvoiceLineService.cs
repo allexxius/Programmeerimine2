@@ -66,13 +66,13 @@ namespace KooliProjekt.Services
 
         {
 
-            var InvoiceLine = await _context.Doctors.FindAsync(id);
+            var InvoiceLine = await _context.InvoiceLines.FindAsync(id);
 
             if (InvoiceLine != null)
 
             {
 
-                _context.Doctors.Remove(InvoiceLine);
+                _context.InvoiceLines.Remove(InvoiceLine);
 
                 await _context.SaveChangesAsync();
 
