@@ -66,7 +66,8 @@ namespace KooliProjekt.IntegrationTests.Helpers
                 {
                     throw new Exception("LIVE SETTINGS IN TESTS!");
                 }
-
+                dbContext.Database.EnsureDeleted();
+                dbContext.Database.EnsureCreated();
                 //EnsureDatabase(dbContext);
             }
         }
