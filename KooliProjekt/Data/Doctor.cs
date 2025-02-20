@@ -26,8 +26,7 @@ namespace KooliProjekt.Data
         [Required]
 
         public int UserId { get; set; }
-
-
+       
     }
 
 }
