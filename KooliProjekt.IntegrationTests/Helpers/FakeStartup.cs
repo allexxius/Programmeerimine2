@@ -1,8 +1,12 @@
 ﻿using System;
 
+using System.Linq;
+
 using KooliProjekt.Controllers;
 
 using KooliProjekt.Data;
+
+using KooliProjekt.Services;
 
 using Microsoft.AspNetCore.Builder;
 
@@ -61,6 +65,18 @@ namespace KooliProjekt.IntegrationTests.Helpers
 
             //services.AddScoped<IFileClient, LocalFileClient>();
 
+            services.AddScoped<IDoctorService, DoctorService>();
+
+            services.AddScoped<IDocumentService, DocumentService>();
+
+            services.AddScoped<IInvoiceService, InvoiceService>();
+
+            services.AddScoped<IInvoiceLineService, InvoiceLineService>();
+
+            services.AddScoped<ITimeService, TimeService>();
+
+            services.AddScoped<IVisitService, VisitService>();
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -111,33 +127,29 @@ namespace KooliProjekt.IntegrationTests.Helpers
 
                 }
 
-                dbContext.Database.EnsureDeleted();
-
-                dbContext.Database.EnsureCreated();
-
-                //EnsureDatabase(dbContext);
+                EnsureDatabase(dbContext);
 
             }
 
         }
 
-        //private void EnsureDatabase(ApplicationDbContext dbContext)
+        private void EnsureDatabase(ApplicationDbContext dbContext)
 
-        //{
+        {
 
-        //    dbContext.Database.EnsureDeleted();
+            dbContext.Database.EnsureDeleted();
 
-        //    dbContext.Database.EnsureCreated();
+            dbContext.Database.EnsureCreated();
 
-        //    if (!dbContext.Degustation.Any() || !dbContext.Batch.Any() || !dbContext.BatchIngredient.Any() || !dbContext.Batchlog.Any() || !dbContext.Batch.Any() || !dbContext.User.Any())
+            if (!dbContext.Doctors.Any() || !dbContext.Documents.Any() || !dbContext.Invoices.Any() || !dbContext.InvoiceLines.Any() || !dbContext.Times.Any() || !dbContext.Visits.Any())
 
-        //    {
+            {
 
-        //        SeedData.Initialize(dbContext);
+                SeedData.Generate(dbContext);
 
-        //    }
+            }
 
-        //}
+        }
 
     }
 

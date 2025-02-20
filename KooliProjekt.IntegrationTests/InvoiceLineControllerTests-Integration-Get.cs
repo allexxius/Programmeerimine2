@@ -18,7 +18,7 @@ namespace KooliProjekt.IntegrationTests
 
     [Collection("Sequential")]
 
-    public class DoctorControllerTests : TestBase
+    public class InvoiceLineControllerTests : TestBase
 
     {
 
@@ -26,7 +26,7 @@ namespace KooliProjekt.IntegrationTests
 
         private readonly ApplicationDbContext _context;
 
-        public DoctorControllerTests()
+        public InvoiceLineControllerTests()
 
         {
 
@@ -38,29 +38,13 @@ namespace KooliProjekt.IntegrationTests
 
         [Fact]
 
-        public async Task Index_should_return_correct_response()
+        public async Task Details_should_return_notfound_when_invoicelines_was_not_found()
 
         {
 
             // Act
 
-            using var response = await _client.GetAsync("/Doctors");
-
-            // Assert
-
-            response.EnsureSuccessStatusCode();
-
-        }
-
-        [Fact]
-
-        public async Task Details_should_return_notfound_when_doctor_was_not_found()
-
-        {
-
-            // Act
-
-            using var response = await _client.GetAsync("/Doctors/Details/100");
+            using var response = await _client.GetAsync("/InvoiceLines/Details/100");
 
             // Assert
 
@@ -76,7 +60,7 @@ namespace KooliProjekt.IntegrationTests
 
             // Act
 
-            using var response = await _client.GetAsync("/Doctors/Details/");
+            using var response = await _client.GetAsync("/InvoiceLines/Details/");
 
             // Assert
 
@@ -86,21 +70,21 @@ namespace KooliProjekt.IntegrationTests
 
         [Fact]
 
-        public async Task Details_should_return_ok_when_doctor_was_found()
+        public async Task Details_should_return_ok_when_invoicelines_was_found()
 
         {
 
             // Arrange
 
-            var doctor = new Doctor { Name = "Dr. Smith", Specialization = "Cardiology" };
+            var invoiceLine = new InvoiceLine { Service = "Dr. Smith", Price = 1 };
 
-            _context.Doctors.Add(doctor);
+            _context.InvoiceLines.Add(invoiceLine);
 
             _context.SaveChanges();
 
             // Act
 
-            using var response = await _client.GetAsync($"/Doctors/Details/{doctor.Id}");
+            using var response = await _client.GetAsync($"/InvoiceLines/Details/{invoiceLine.Id}");
 
             // Assert
 

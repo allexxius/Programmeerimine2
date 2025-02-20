@@ -18,7 +18,7 @@ namespace KooliProjekt.IntegrationTests
 
     [Collection("Sequential")]
 
-    public class DoctorControllerTests : TestBase
+    public class DocumentControllerTests : TestBase
 
     {
 
@@ -26,7 +26,7 @@ namespace KooliProjekt.IntegrationTests
 
         private readonly ApplicationDbContext _context;
 
-        public DoctorControllerTests()
+        public DocumentControllerTests()
 
         {
 
@@ -44,7 +44,7 @@ namespace KooliProjekt.IntegrationTests
 
             // Act
 
-            using var response = await _client.GetAsync("/Doctors");
+            using var response = await _client.GetAsync("/Documents");
 
             // Assert
 
@@ -54,13 +54,13 @@ namespace KooliProjekt.IntegrationTests
 
         [Fact]
 
-        public async Task Details_should_return_notfound_when_doctor_was_not_found()
+        public async Task Details_should_return_notfound_when_document_was_not_found()
 
         {
 
             // Act
 
-            using var response = await _client.GetAsync("/Doctors/Details/100");
+            using var response = await _client.GetAsync("/Documents/Details/100");
 
             // Assert
 
@@ -76,7 +76,7 @@ namespace KooliProjekt.IntegrationTests
 
             // Act
 
-            using var response = await _client.GetAsync("/Doctors/Details/");
+            using var response = await _client.GetAsync("/Documents/Details/");
 
             // Assert
 
@@ -86,21 +86,21 @@ namespace KooliProjekt.IntegrationTests
 
         [Fact]
 
-        public async Task Details_should_return_ok_when_doctor_was_found()
+        public async Task Details_should_return_ok_when_document_was_found()
 
         {
 
             // Arrange
 
-            var doctor = new Doctor { Name = "Dr. Smith", Specialization = "Cardiology" };
+            var document = new Document { Type = "Dr. Smith", File = "Cardiology" };
 
-            _context.Doctors.Add(doctor);
+            _context.Documents.Add(document);
 
             _context.SaveChanges();
 
             // Act
 
-            using var response = await _client.GetAsync($"/Doctors/Details/{doctor.Id}");
+            using var response = await _client.GetAsync($"/Documents/Details/{document.ID}");
 
             // Assert
 

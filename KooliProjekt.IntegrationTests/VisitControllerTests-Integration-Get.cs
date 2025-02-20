@@ -12,13 +12,17 @@ using KooliProjekt.IntegrationTests.Helpers;
 
 using Xunit;
 
+using System;
+
+using Microsoft.AspNetCore.Identity;
+
 namespace KooliProjekt.IntegrationTests
 
 {
 
     [Collection("Sequential")]
 
-    public class DoctorControllerTests : TestBase
+    public class VisitControllerTests : TestBase
 
     {
 
@@ -26,7 +30,7 @@ namespace KooliProjekt.IntegrationTests
 
         private readonly ApplicationDbContext _context;
 
-        public DoctorControllerTests()
+        public VisitControllerTests()
 
         {
 
@@ -44,7 +48,7 @@ namespace KooliProjekt.IntegrationTests
 
             // Act
 
-            using var response = await _client.GetAsync("/Doctors");
+            using var response = await _client.GetAsync("/Visits");
 
             // Assert
 
@@ -54,13 +58,13 @@ namespace KooliProjekt.IntegrationTests
 
         [Fact]
 
-        public async Task Details_should_return_notfound_when_doctor_was_not_found()
+        public async Task Details_should_return_notfound_when_visit_was_not_found()
 
         {
 
             // Act
 
-            using var response = await _client.GetAsync("/Doctors/Details/100");
+            using var response = await _client.GetAsync("/Visits/Details/100");
 
             // Assert
 
@@ -76,7 +80,7 @@ namespace KooliProjekt.IntegrationTests
 
             // Act
 
-            using var response = await _client.GetAsync("/Doctors/Details/");
+            using var response = await _client.GetAsync("/Visits/Details/");
 
             // Assert
 
@@ -86,21 +90,37 @@ namespace KooliProjekt.IntegrationTests
 
         [Fact]
 
-        public async Task Details_should_return_ok_when_doctor_was_found()
+        public async Task Details_should_return_ok_when_visit_was_found()
 
         {
 
             // Arrange
 
-            var doctor = new Doctor { Name = "Dr. Smith", Specialization = "Cardiology" };
+            var user = new IdentityUser { UserName = "testuser", Email = "testuser@example.com" };
 
-            _context.Doctors.Add(doctor);
+            _context.Users.Add(user);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            var visit = new Visit
+
+            {
+
+                Name = "Dr. Smith",
+
+                Duration = 1,
+
+                UserId = user.Id // Assign the UserId to the visit
+
+            };
+
+            _context.Visits.Add(visit);
+
+            await _context.SaveChangesAsync();
 
             // Act
 
-            using var response = await _client.GetAsync($"/Doctors/Details/{doctor.Id}");
+            using var response = await _client.GetAsync($"/Visits/Details/{visit.Id}");
 
             // Assert
 

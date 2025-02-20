@@ -12,13 +12,15 @@ using KooliProjekt.IntegrationTests.Helpers;
 
 using Xunit;
 
+using System;
+
 namespace KooliProjekt.IntegrationTests
 
 {
 
     [Collection("Sequential")]
 
-    public class DoctorControllerTests : TestBase
+    public class TimesControllerTests : TestBase
 
     {
 
@@ -26,7 +28,7 @@ namespace KooliProjekt.IntegrationTests
 
         private readonly ApplicationDbContext _context;
 
-        public DoctorControllerTests()
+        public TimesControllerTests()
 
         {
 
@@ -44,7 +46,7 @@ namespace KooliProjekt.IntegrationTests
 
             // Act
 
-            using var response = await _client.GetAsync("/Doctors");
+            using var response = await _client.GetAsync("/Times");
 
             // Assert
 
@@ -54,13 +56,13 @@ namespace KooliProjekt.IntegrationTests
 
         [Fact]
 
-        public async Task Details_should_return_notfound_when_doctor_was_not_found()
+        public async Task Details_should_return_notfound_when_times_was_not_found()
 
         {
 
             // Act
 
-            using var response = await _client.GetAsync("/Doctors/Details/100");
+            using var response = await _client.GetAsync("/Time/Details/100");
 
             // Assert
 
@@ -76,7 +78,7 @@ namespace KooliProjekt.IntegrationTests
 
             // Act
 
-            using var response = await _client.GetAsync("/Doctors/Details/");
+            using var response = await _client.GetAsync("/Time/Details/");
 
             // Assert
 
@@ -86,21 +88,21 @@ namespace KooliProjekt.IntegrationTests
 
         [Fact]
 
-        public async Task Details_should_return_ok_when_doctor_was_found()
+        public async Task Details_should_return_ok_when_time_was_found()
 
         {
 
             // Arrange
 
-            var doctor = new Doctor { Name = "Dr. Smith", Specialization = "Cardiology" };
+            var time = new Time { Free = true, Date = DateTime.Now };
 
-            _context.Doctors.Add(doctor);
+            _context.Times.Add(time);
 
             _context.SaveChanges();
 
             // Act
 
-            using var response = await _client.GetAsync($"/Doctors/Details/{doctor.Id}");
+            using var response = await _client.GetAsync($"/Times/Details/{time.Id}");
 
             // Assert
 

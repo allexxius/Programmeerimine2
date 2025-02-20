@@ -18,7 +18,7 @@ namespace KooliProjekt.IntegrationTests
 
     [Collection("Sequential")]
 
-    public class DoctorControllerTests : TestBase
+    public class InvoiceControllerTests : TestBase
 
     {
 
@@ -26,7 +26,7 @@ namespace KooliProjekt.IntegrationTests
 
         private readonly ApplicationDbContext _context;
 
-        public DoctorControllerTests()
+        public InvoiceControllerTests()
 
         {
 
@@ -36,31 +36,17 @@ namespace KooliProjekt.IntegrationTests
 
         }
 
+
+
         [Fact]
 
-        public async Task Index_should_return_correct_response()
+        public async Task Details_should_return_notfound_when_invoice_was_not_found()
 
         {
 
             // Act
 
-            using var response = await _client.GetAsync("/Doctors");
-
-            // Assert
-
-            response.EnsureSuccessStatusCode();
-
-        }
-
-        [Fact]
-
-        public async Task Details_should_return_notfound_when_doctor_was_not_found()
-
-        {
-
-            // Act
-
-            using var response = await _client.GetAsync("/Doctors/Details/100");
+            using var response = await _client.GetAsync("/Invoices/Details/100");
 
             // Assert
 
@@ -76,7 +62,7 @@ namespace KooliProjekt.IntegrationTests
 
             // Act
 
-            using var response = await _client.GetAsync("/Doctors/Details/");
+            using var response = await _client.GetAsync("/Invoices/Details/");
 
             // Assert
 
@@ -86,21 +72,21 @@ namespace KooliProjekt.IntegrationTests
 
         [Fact]
 
-        public async Task Details_should_return_ok_when_doctor_was_found()
+        public async Task Details_should_return_ok_when_invoice_was_found()
 
         {
 
             // Arrange
 
-            var doctor = new Doctor { Name = "Dr. Smith", Specialization = "Cardiology" };
+            var invoice = new Invoice { Sum = 1, Paid = true };
 
-            _context.Doctors.Add(doctor);
+            _context.Invoices.Add(invoice);
 
             _context.SaveChanges();
 
             // Act
 
-            using var response = await _client.GetAsync($"/Doctors/Details/{doctor.Id}");
+            using var response = await _client.GetAsync($"/Invoices/Details/{invoice.Id}");
 
             // Assert
 
