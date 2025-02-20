@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using KooliProjekt.Controllers;
 using KooliProjekt.Data;
+using KooliProjekt.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -36,6 +38,18 @@ namespace KooliProjekt.IntegrationTests.Helpers
                     .AddApplicationPart(typeof(HomeController).Assembly);
 
             //services.AddScoped<IFileClient, LocalFileClient>();
+
+            services.AddScoped<IDoctorService, DoctorService>();
+            
+            services.AddScoped<IDocumentService, DocumentService>();
+            
+            services.AddScoped<IInvoiceService, InvoiceService>();
+            
+            services.AddScoped<IInvoiceLineService, InvoiceLineService>();
+            
+            services.AddScoped<ITimeService, TimeService>();
+            
+            services.AddScoped<IVisitService, VisitService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -66,21 +80,21 @@ namespace KooliProjekt.IntegrationTests.Helpers
                 {
                     throw new Exception("LIVE SETTINGS IN TESTS!");
                 }
-                dbContext.Database.EnsureDeleted();
-                dbContext.Database.EnsureCreated();
-                //EnsureDatabase(dbContext);
+
+                EnsureDatabase(dbContext);
             }
         }
 
-        //private void EnsureDatabase(ApplicationDbContext dbContext)
-        //{
-        //    dbContext.Database.EnsureDeleted();
-        //    dbContext.Database.EnsureCreated();
+        private void EnsureDatabase(ApplicationDbContext dbContext)
+        {
+            dbContext.Database.EnsureDeleted();
+            dbContext.Database.EnsureCreated();
 
-        //    if (!dbContext.Degustation.Any() || !dbContext.Batch.Any() || !dbContext.BatchIngredient.Any() || !dbContext.Batchlog.Any() || !dbContext.Batch.Any() || !dbContext.User.Any())
-        //    {
-        //        SeedData.Initialize(dbContext);
-        //    }
-        //}
+            if (!dbContext.Doctors.Any() || !dbContext.Documents.Any() || !dbContext.Invoices.Any() || !dbContext.InvoiceLines.Any() || !dbContext.Times.Any() || !dbContext.Visits.Any())
+            {
+                SeedData.Generate(dbContext);
+            }
+
+        }
     }
 }

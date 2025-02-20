@@ -4,6 +4,7 @@ using Xunit;
 
 namespace KooliProjekt.IntegrationTests
 {
+    [Collection("Sequential")]
     public class HomeControllerTests : TestBase
     {
         [Theory]
@@ -21,5 +22,5 @@ namespace KooliProjekt.IntegrationTests
             response.EnsureSuccessStatusCode();
             Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
         }
-     }
+    }
 }

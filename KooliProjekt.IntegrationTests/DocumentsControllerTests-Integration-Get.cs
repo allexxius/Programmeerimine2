@@ -9,12 +9,12 @@ using Xunit;
 namespace KooliProjekt.IntegrationTests
 {
     [Collection("Sequential")]
-    public class DocumentsControllerTests : TestBase
+    public class DocumentControllerTests : TestBase
     {
         private readonly HttpClient _client;
         private readonly ApplicationDbContext _context;
 
-        public DocumentsControllerTests()
+        public DocumentControllerTests()
         {
             _client = Factory.CreateClient();
             _context = (ApplicationDbContext)Factory.Services.GetService(typeof(ApplicationDbContext));
@@ -31,7 +31,7 @@ namespace KooliProjekt.IntegrationTests
         }
 
         [Fact]
-        public async Task Details_should_return_notfound_when_doctor_was_not_found()
+        public async Task Details_should_return_notfound_when_document_was_not_found()
         {
             // Act
             using var response = await _client.GetAsync("/Documents/Details/100");
@@ -51,15 +51,15 @@ namespace KooliProjekt.IntegrationTests
         }
 
         [Fact]
-        public async Task Details_should_return_ok_when_doctor_was_found()
+        public async Task Details_should_return_ok_when_document_was_found()
         {
             // Arrange
-            var document = new Document { File = "Dr. Smith", Type = "Cardiology" };
+            var document = new Document { Type = "Dr. Smith", File = "Cardiology" };
             _context.Documents.Add(document);
             _context.SaveChanges();
 
             // Act
-            using var response = await _client.GetAsync($"/Doctors/Details/{document.ID}");
+            using var response = await _client.GetAsync($"/Documents/Details/{document.ID}");
 
             // Assert
             response.EnsureSuccessStatusCode();
