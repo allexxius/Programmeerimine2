@@ -20,7 +20,7 @@ namespace KooliProjekt.IntegrationTests
 
     [Collection("Sequential")]
 
-    public class TimesControllerTests : TestBase
+    public class TimeControllerTests : TestBase
 
     {
 
@@ -28,7 +28,7 @@ namespace KooliProjekt.IntegrationTests
 
         private readonly ApplicationDbContext _context;
 
-        public TimesControllerTests()
+        public TimeControllerTests()
 
         {
 
