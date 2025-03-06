@@ -1,136 +1,215 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
 using System.Linq;
+
 using System.Net;
+
 using System.Net.Http;
+
 using System.Threading.Tasks;
+
 using KooliProjekt.Data;
+
 using KooliProjekt.IntegrationTests.Helpers;
+
+using KooliProjekt.Models;
+
 using Microsoft.AspNetCore.Mvc.Testing;
+
+using Microsoft.Extensions.DependencyInjection;
+
 using Xunit;
 
 namespace KooliProjekt.IntegrationTests
+
 {
+
     [Collection("Sequential")]
+
     public class DoctorsControllerTests : TestBase
+
     {
+
         private readonly HttpClient _client;
-        private readonly ApplicationDbContext _context;
 
         public DoctorsControllerTests()
+
         {
+
             var options = new WebApplicationFactoryClientOptions
+
             {
+
                 AllowAutoRedirect = false
+
             };
+
             _client = Factory.CreateClient(options);
-            _context = (ApplicationDbContext)Factory.Services.GetService(typeof(ApplicationDbContext));
+
+        }
+
+        private ApplicationDbContext GetDbContext()
+
+        {
+
+            var scope = Factory.Services.CreateScope();
+
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            dbContext.Doctors.RemoveRange(dbContext.Doctors); // Reset database
+
+            dbContext.SaveChanges();
+
+            return dbContext;
+
         }
 
         [Fact]
 
         public async Task Index_should_return_success()
-        {
-            // Arrange
 
-            // Act
+        {
+
             using var response = await _client.GetAsync("/Doctors");
 
-            // Assert
             response.EnsureSuccessStatusCode();
+
         }
 
         [Theory]
-        [InlineData("/Doctors/Details")]
-        [InlineData("/Doctors/Details/100")]
-        [InlineData("/Doctors/Delete")]
-        [InlineData("/Doctors/Delete/100")]
-        [InlineData("/Doctors/Edit")]
-        [InlineData("/Doctors/Edit/100")]
-        public async Task Should_return_notfound(string url)
-        {
-            // Arrange
 
-            // Act
+        [InlineData("/Doctors/Details")]
+
+        [InlineData("/Doctors/Details/100")]
+
+        [InlineData("/Doctors/Delete")]
+
+        [InlineData("/Doctors/Delete/100")]
+
+        [InlineData("/Doctors/Edit")]
+
+        [InlineData("/Doctors/Edit/100")]
+
+        public async Task Should_return_notfound(string url)
+
+        {
+
             using var response = await _client.GetAsync(url);
 
-            // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
         }
 
         [Fact]
-        public async Task Details_should_return_notfound_when_list_was_not_found()
-        {
-            // Arrange
 
-            // Act
+        public async Task Details_should_return_notfound_when_doctor_was_not_found()
+
+        {
+
             using var response = await _client.GetAsync("/Doctors/Details/100");
 
-            // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
         }
 
         [Fact]
 
-        public async Task Details_should_return_success_when_list_was_found()
+        public async Task Details_should_return_success_when_doctor_was_found()
+
         {
-            // Arrange
-            var list = new Doctor { Specialization = "Test" };
-            _context.Doctors.Add(list);
-            _context.SaveChanges();
 
-            // Act
-            using var response = await _client.GetAsync("/Doctors/Details/" + list.Id);
+            using var dbContext = GetDbContext();
 
-            // Assert
+            var doctor = new Doctor { Name = "Test", Specialization = "Cardiology" };
+
+            dbContext.Doctors.Add(doctor);
+
+            dbContext.SaveChanges();
+
+            using var response = await _client.GetAsync($"/Doctors/Details/{doctor.Id}");
+
             response.EnsureSuccessStatusCode();
+
         }
 
         [Fact]
 
-        public async Task Create_should_save_new_list()
+        public async Task Create_should_save_new_doctor()
+
         {
+
             // Arrange
-            var formValues = new Dictionary<string, string>();
-            formValues.Add("Id", "0");
-            formValues.Add("Name", "Test");
+
+            var formValues = new Dictionary<string, string>
+
+    {
+
+        { "Name", "Test Doctor" },
+
+        { "Specialization", "Cardiology" }
+
+    };
 
             using var content = new FormUrlEncodedContent(formValues);
 
             // Act
+
             using var response = await _client.PostAsync("/Doctors/Create", content);
 
-            // Log the actual response code
-            Console.WriteLine($"Response Status Code: {response.StatusCode}");
-
             // Assert
-            Assert.True(
-                response.StatusCode == HttpStatusCode.Redirect ||
-                response.StatusCode == HttpStatusCode.MovedPermanently);
-               
-                 
-            var list = _context.Doctors.FirstOrDefault();
-            Assert.NotNull(list);
-            Assert.NotEqual(0, list.Id);
-            Assert.Equal("Test", list.Name);
+
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+
+            {
+
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                Assert.True(false, $"Form submission failed with BadRequest. Response: {responseBody}");
+
+            }
+
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+
+            using var dbContext = GetDbContext();
+
+            var doctor = dbContext.Doctors.FirstOrDefault();
+
+            Assert.NotNull(doctor);
+
+            Assert.Equal("Test Doctor", doctor.Name);
+
+            Assert.Equal("Cardiology", doctor.Specialization);
+
         }
 
-
         [Fact]
-        public async Task Create_should_not_save_invalid_new_list()
+
+        public async Task Create_should_not_save_invalid_new_doctor()
+
         {
-            // Arrange
-            var formValues = new Dictionary<string, string>();
-            formValues.Add("Name", "Test");
+
+            var formValues = new Dictionary<string, string>
+
+            {
+
+                { "Name", "" },
+
+                { "Specialization", "" }
+
+            };
 
             using var content = new FormUrlEncodedContent(formValues);
 
-            // Act
             using var response = await _client.PostAsync("/Doctors/Create", content);
 
-            // Assert
-            response.EnsureSuccessStatusCode();
-            Assert.False(_context.Doctors.Any());
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            using var dbContext = GetDbContext();
+
+            Assert.False(dbContext.Doctors.Any());
+
         }
+
     }
+
 }
