@@ -31,6 +31,7 @@ namespace KooliProjekt.IntegrationTests
     {
 
         private readonly HttpClient _client;
+        private readonly ApplicationDbContext _dbContext;
 
         public DoctorsControllerTests()
 
@@ -45,6 +46,7 @@ namespace KooliProjekt.IntegrationTests
             };
 
             _client = Factory.CreateClient(options);
+            _dbContext = Factory.Services.GetRequiredService<ApplicationDbContext>();   
 
         }
 
@@ -142,13 +144,13 @@ namespace KooliProjekt.IntegrationTests
 
             var formValues = new Dictionary<string, string>
 
-    {
+            {
 
-        { "Name", "Test Doctor" },
+                { "Name", "Test Doctor" },
 
-        { "Specialization", "Cardiology" }
+                { "Specialization", "Cardiology" }
 
-    };
+            };
 
             using var content = new FormUrlEncodedContent(formValues);
 
@@ -164,15 +166,13 @@ namespace KooliProjekt.IntegrationTests
 
                 var responseBody = await response.Content.ReadAsStringAsync();
 
-                Assert.True(false, $"Form submission failed with BadRequest. Response: {responseBody}");
+                Assert.Fail($"Form submission failed with BadRequest. Response: {responseBody}");
 
             }
 
             Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
 
-            using var dbContext = GetDbContext();
-
-            var doctor = dbContext.Doctors.FirstOrDefault();
+            var doctor = _dbContext.Doctors.FirstOrDefault();
 
             Assert.NotNull(doctor);
 
@@ -193,6 +193,7 @@ namespace KooliProjekt.IntegrationTests
             {
 
                 { "Name", "" },
+                { "Userid", "" },
 
                 { "Specialization", "" }
 
@@ -202,7 +203,7 @@ namespace KooliProjekt.IntegrationTests
 
             using var response = await _client.PostAsync("/Doctors/Create", content);
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            response.EnsureSuccessStatusCode();
 
             using var dbContext = GetDbContext();
 

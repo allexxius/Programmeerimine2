@@ -90,11 +90,6 @@ namespace KooliProjekt.IntegrationTests.Helpers
             dbContext.Database.EnsureDeleted();
             dbContext.Database.EnsureCreated();
 
-            if (!dbContext.Doctors.Any() || !dbContext.Documents.Any() || !dbContext.Invoices.Any() || !dbContext.InvoiceLines.Any() || !dbContext.Times.Any() || !dbContext.Visits.Any())
-            {
-                SeedData.Generate(dbContext);
-            }
-
         }
     }
 }

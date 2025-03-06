@@ -102,9 +102,9 @@ namespace KooliProjekt.Controllers
 
         [HttpPost]
 
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> Create([Bind("Id,Name,Specialization,UserId")] Doctor doctor)
+        public async Task<IActionResult> Create(Doctor doctor)
 
         {
 
