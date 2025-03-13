@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using KooliProjekt.Data;
 using KooliProjekt.Models;
 using System.Runtime.CompilerServices;
+using KooliProjekt.Search;
 
 [assembly: InternalsVisibleTo("KooliProjekt.UnitTests")]
 
@@ -23,10 +24,30 @@ namespace KooliProjekt.Controllers
         }
 
         // GET: Documents
-        public async Task<IActionResult> Index(int page = 1)
+        //public async Task<IActionResult> Index(int page = 1)
+        //{
+        //    var documents = await _documentService.List(page, 10);
+        //    return View(documents);
+        //}
+
+        // GET: Documents
+
+        public async Task<IActionResult> Index(int page = 1, DocumentSearch search = null)
+
         {
-            var documents = await _documentService.List(page, 10);
-            return View(documents);
+
+            var model = new DocumentIndexModel
+
+            {
+
+                Search = search,
+
+                Data = await _documentService.List(page, 10, search)
+
+            };
+
+            return View(model);
+
         }
 
         // GET: Documents/Details/5
@@ -55,7 +76,7 @@ namespace KooliProjekt.Controllers
         // POST: Documents/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Type")] Document document)
+        public async Task<IActionResult> Create(Document document)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +107,7 @@ namespace KooliProjekt.Controllers
         // POST: Documents/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Type")] Document document)
+        public async Task<IActionResult> Edit(int id, Document document)
         {
             if (id != document.ID)
             {
@@ -147,5 +168,7 @@ namespace KooliProjekt.Controllers
             var document = _documentService.Get(id).Result;
             return document != null;
         }
+
+        
     }
 }

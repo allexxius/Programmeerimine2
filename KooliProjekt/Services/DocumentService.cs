@@ -1,5 +1,5 @@
 ﻿using KooliProjekt.Data;
-
+using KooliProjekt.Search;
 using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.EntityFrameworkCore;
@@ -80,6 +80,20 @@ namespace KooliProjekt.Services
 
         }
 
+        public async Task<PagedResult<Document>> List(int page, int pageSize, DocumentSearch search)
+        {
+            var query = _context.Documents.AsQueryable();
+
+            // Otsingu tingimused
+
+            var result = await query.GetPagedAsync(page, pageSize);
+            return result;
+        }
+
+        Task<string> IDocumentService.List(int page, int v)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }
