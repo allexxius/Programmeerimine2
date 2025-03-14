@@ -84,7 +84,10 @@ namespace KooliProjekt.Services
         {
             var query = _context.Documents.AsQueryable();
 
-            // Otsingu tingimused
+            if(search != null && !string.IsNullOrEmpty(search.Keyword))
+            {
+                query = query.Where(doc => doc.File.Contains(search.Keyword));
+            }
 
             var result = await query.GetPagedAsync(page, pageSize);
             return result;
