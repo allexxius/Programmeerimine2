@@ -2,10 +2,8 @@
 
 namespace KooliProjekt.Data
 {
-    public class Document
+    public class Document : Entity
     {
-        [Required]
-        public int ID { get; set; }
 
         [Required]
         [StringLength(50)]

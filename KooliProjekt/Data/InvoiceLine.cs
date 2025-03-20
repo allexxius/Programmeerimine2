@@ -2,10 +2,8 @@
 
 namespace KooliProjekt.Data
 {
-    public class InvoiceLine
+    public class InvoiceLine : Entity
     {
-        [Required]
-        public int Id { get; set; }
 
         [Required]
         public int InvoiceId { get; set; }

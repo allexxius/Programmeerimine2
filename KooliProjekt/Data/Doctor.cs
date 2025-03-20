@@ -4,8 +4,6 @@ namespace KooliProjekt.Data
 {
     public class Doctor : Entity
     {
-        [Required]
-        public int Id {  get; set; }
 
         [Required]
         [StringLength(50)]

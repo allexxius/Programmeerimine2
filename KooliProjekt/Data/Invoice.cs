@@ -2,10 +2,9 @@
 
 namespace KooliProjekt.Data
 {
-    public class Invoice
+    public class Invoice : Entity
     {
-        [Required]
-        public int Id { get; set; }
+
 
         [Required]
         public DateTime Date { get; set; }
