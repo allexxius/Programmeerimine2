@@ -55,7 +55,7 @@ namespace KooliProjekt.Controllers
         // POST: Times/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,DoctorId")] Time time)
+        public async Task<IActionResult> Create(Time time)
         {
             if (ModelState.IsValid)
             {
@@ -85,7 +85,7 @@ namespace KooliProjekt.Controllers
         // POST: Times/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,DoctorId")] Time time)
+        public async Task<IActionResult> Edit(int id, Time time)
         {
             if (id != time.Id)
             {

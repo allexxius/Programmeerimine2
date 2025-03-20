@@ -156,7 +156,7 @@ namespace KooliProjekt.Controllers
 
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Specialization,UserId")] Doctor doctor)
+        public async Task<IActionResult> Edit(int id, Doctor doctor)
 
         {
 

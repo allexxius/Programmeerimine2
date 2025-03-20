@@ -8,17 +8,47 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WpfApp.Api;
 
-namespace WpfApp
+namespace WpfApp;
+
+/// <summary>
+/// Interaction logic for MainWindow.xaml
+/// </summary>
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
+        InitializeComponent();
+
+        Loaded += MainWindow_Loaded;
+    }
+
+    private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        var viewModel = new MainWindowViewModel();
+        viewModel.ConfirmDelete = _ =>
         {
-            InitializeComponent();
-        }
+            var result = MessageBox.Show(
+                            "Are you sure you want to delete selected item?",
+                            "Delete list",
+                            MessageBoxButton.YesNo,
+                            MessageBoxImage.Stop
+                            );
+            return (result == MessageBoxResult.Yes);
+        };
+        viewModel.OnError = (error) =>
+        {
+            MessageBox.Show(
+                    error,
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+        };
+
+        DataContext = viewModel;
+
+        await viewModel.Load();
     }
 }

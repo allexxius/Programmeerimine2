@@ -7,6 +7,36 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400"></ColumnDefinition>
+            <ColumnDefinition Width="400"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <DataGrid 
+            x:Name="DoctorsGrid"
+            Grid.Column="0"
+            ItemsSource="{Binding Lists}"
+            SelectedItem="{Binding SelectedItem}"
+            d:ItemsSource="{d:SampleData ItemCount=10}"/>
 
+        <StackPanel
+            Margin="10"
+            Grid.Column="1">
+            <TextBlock>ID</TextBlock>
+            <TextBox Text="{Binding SelectedItem.Id}"></TextBox>
+            <TextBlock>Specialization</TextBlock>
+            <TextBox Text="{Binding SelectedItem.Specialization}"></TextBox>
+            <TextBlock>Name</TextBlock>
+            <TextBox Text="{Binding SelectedItem.Name}"></TextBox>
+            <TextBlock>UserId</TextBlock>
+            <TextBox Text="{Binding SelectedItem.UserId}"></TextBox>
+            <StackPanel 
+                HorizontalAlignment="Center"
+                Orientation="Horizontal" 
+                Margin="10">
+                <Button Command="{Binding NewCommand}" Margin="5" Padding="5">New</Button>
+                <Button Command="{Binding SaveCommand}" Margin="5" Padding="5">Save</Button>
+                <Button Command="{Binding DeleteCommand}" Margin="5" Padding="5">Delete</Button>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>

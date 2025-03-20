@@ -55,7 +55,7 @@ namespace KooliProjekt.Controllers
         // POST: Invoices/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Sum,UserId")] Invoice invoice)
+        public async Task<IActionResult> Create( Invoice invoice)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +86,7 @@ namespace KooliProjekt.Controllers
         // POST: Invoices/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Sum,UserId")] Invoice invoice)
+        public async Task<IActionResult> Edit(int id, Invoice invoice)
         {
             if (id != invoice.Id)
             {
