@@ -32,8 +32,8 @@ namespace KooliProjekt.UnitTests.ControllerTests
             int page = 1;
             var data = new List<Document>
             {
-                new Document { ID = 1, Type = "Test 1" },
-                new Document { ID = 2, Type = "Test 2" }
+                new Document { Id = 1, Type = "Test 1" },
+                new Document { Id = 2, Type = "Test 2" }
             };
             var pagedResult = new PagedResult<Document> { Results = data };
 
@@ -85,7 +85,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
-            var document = new Document { ID = id, Type = "Test Document" };
+            var document = new Document { Id = id, Type = "Test Document" };
 
             _documentServiceMock
                 .Setup(x => x.Get(id))
@@ -116,7 +116,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         public async Task Create_ShouldReturnViewWithModel_WhenModelStateIsInvalid()
         {
             // Arrange
-            var document = new Document { ID = 1, Type = "Test Document" };
+            var document = new Document { Id = 1, Type = "Test Document" };
             _controller.ModelState.AddModelError("Type", "Required");
 
             // Act
@@ -132,7 +132,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         public async Task Create_ShouldCallSaveMethod_AndRedirectToIndex_WhenModelStateIsValid()
         {
             // Arrange
-            var document = new Document { ID = 1, Type = "Test Document" };
+            var document = new Document { Id = 1, Type = "Test Document" };
 
             _documentServiceMock
                 .Setup(x => x.Save(document))
@@ -183,7 +183,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
-            var document = new Document { ID = id, Type = "Test Document" };
+            var document = new Document { Id = id, Type = "Test Document" };
 
             _documentServiceMock
                 .Setup(x => x.Get(id))
@@ -204,7 +204,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
-            var document = new Document { ID = 2, Type = "Test Document" };
+            var document = new Document { Id = 2, Type = "Test Document" };
 
             // Act
             var result = await _controller.Edit(id, document);
@@ -218,7 +218,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
-            var document = new Document { ID = id, Type = "Test Document" };
+            var document = new Document { Id = id, Type = "Test Document" };
             _controller.ModelState.AddModelError("Type", "Required");
 
             // Act
@@ -235,7 +235,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
-            var document = new Document { ID = id, Type = "Test Document" };
+            var document = new Document { Id = id, Type = "Test Document" };
 
             _documentServiceMock
                 .Setup(x => x.Save(document))
@@ -255,7 +255,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
-            var document = new Document { ID = id, Type = "Test Document" };
+            var document = new Document { Id = id, Type = "Test Document" };
 
             _documentServiceMock
                 .Setup(x => x.Save(document))
@@ -274,7 +274,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
-            var document = new Document { ID = id, Type = "Test Document" };
+            var document = new Document { Id = id, Type = "Test Document" };
 
             _documentServiceMock
                 .Setup(x => x.Save(document))
@@ -327,7 +327,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
-            var document = new Document { ID = id, Type = "Test Document" };
+            var document = new Document { Id = id, Type = "Test Document" };
 
             _documentServiceMock
                 .Setup(x => x.Get(id))
@@ -368,7 +368,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
         {
             // Arrange
             int id = 1;
-            var document = new Document { ID = id, Type = "Test Document" };
+            var document = new Document { Id= id, Type = "Test Document" };
 
             _documentServiceMock
                 .Setup(x => x.Get(id))

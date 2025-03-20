@@ -5,8 +5,7 @@ namespace KooliProjekt.Data
     public class Document
     {
         [Required]
-        public int ID { get; set; }
-
+        public int Id { get; internal set; }
         [Required]
         [StringLength(50)]
         public string Type { get; set; }
