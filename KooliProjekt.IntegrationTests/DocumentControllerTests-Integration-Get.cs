@@ -100,7 +100,7 @@ namespace KooliProjekt.IntegrationTests
 
             // Act
 
-            using var response = await _client.GetAsync($"/Documents/Details/{document.ID}");
+            using var response = await _client.GetAsync($"/Documents/Details/{document.Id}");
 
             // Assert
 

@@ -8,6 +8,5 @@ namespace KooliProjekt.Services
         Task<Document> Get(int id);
         Task Save(Document list);
         Task Delete(int id);
-        Task<string> List(int page, int v);
     }
 }

@@ -30,8 +30,8 @@ namespace KooliProjekt.UnitTests.ServiceTests
             // Arrange
             _context.Documents.AddRange(new List<Document>
             {
-                new Document { ID = 1, Type = "PDF", File = "file1.pdf", Visit = 1 },
-                new Document { ID = 2, Type = "DOC", File = "file2.doc", Visit = 2 }
+                new Document { Id = 1, Type = "PDF", File = "file1.pdf", Visit = 1 },
+                new Document { Id = 2, Type = "DOC", File = "file2.doc", Visit = 2 }
             });
             await _context.SaveChangesAsync();
 
@@ -47,7 +47,7 @@ namespace KooliProjekt.UnitTests.ServiceTests
         public async Task Get_ReturnsDocument()
         {
             // Arrange
-            var document = new Document { ID = 1, Type = "PDF", File = "file1.pdf", Visit = 1 };
+            var document = new Document { Id = 1, Type = "PDF", File = "file1.pdf", Visit = 1 };
             _context.Documents.Add(document);
             await _context.SaveChangesAsync();
 
@@ -56,14 +56,14 @@ namespace KooliProjekt.UnitTests.ServiceTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(1, result.ID);
+            Assert.Equal(1, result.Id);
         }
 
         [Fact]
         public async Task Save_AddsNewDocument()
         {
             // Arrange
-            var document = new Document { ID = 0, Type = "PDF", File = "file1.pdf", Visit = 1 };
+            var document = new Document { Id = 0, Type = "PDF", File = "file1.pdf", Visit = 1 };
 
             // Act
             await _documentService.Save(document);
@@ -76,7 +76,7 @@ namespace KooliProjekt.UnitTests.ServiceTests
         public async Task Save_UpdatesExistingDocument()
         {
             // Arrange
-            var document = new Document { ID = 1, Type = "PDF", File = "file1.pdf", Visit = 1 };
+            var document = new Document { Id = 1, Type = "PDF", File = "file1.pdf", Visit = 1 };
             _context.Documents.Add(document);
             await _context.SaveChangesAsync();
 
@@ -93,7 +93,7 @@ namespace KooliProjekt.UnitTests.ServiceTests
         public async Task Delete_RemovesDocument()
         {
             // Arrange
-            var document = new Document { ID = 1, Type = "PDF", File = "file1.pdf", Visit = 1 };
+            var document = new Document { Id = 1, Type = "PDF", File = "file1.pdf", Visit = 1 };
             _context.Documents.Add(document);
             await _context.SaveChangesAsync();
 

@@ -130,7 +130,7 @@ namespace KooliProjekt.IntegrationTests
 
             dbContext.SaveChanges();
 
-            using var response = await _client.GetAsync($"/Documents/Details/{document.ID}");
+            using var response = await _client.GetAsync($"/Documents/Details/{document.Id}");
 
             response.EnsureSuccessStatusCode();
 

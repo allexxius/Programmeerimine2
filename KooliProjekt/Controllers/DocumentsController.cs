@@ -109,7 +109,7 @@ namespace KooliProjekt.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Document document)
         {
-            if (id != document.ID)
+            if (id != document.Id)
             {
                 return NotFound();
             }
@@ -122,7 +122,7 @@ namespace KooliProjekt.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DocumentExists(document.ID))
+                    if (!DocumentExists(document.Id))
                     {
                         return NotFound();
                     }
