@@ -5,5 +5,6 @@
         Task<Result<List<Doctor>>> List();
         Task Save(Doctor list);
         Task Delete(int id);
+
     }
 }

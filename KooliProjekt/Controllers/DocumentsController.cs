@@ -150,7 +150,7 @@ namespace KooliProjekt.Controllers
 
         {
 
-            if (id != document.ID)
+            if (id != document.Id)
 
             {
 
@@ -174,7 +174,7 @@ namespace KooliProjekt.Controllers
 
                 {
 
-                    if (!DocumentExists(document.ID))
+                    if (!DocumentExists(document.Id))
 
                     {
 

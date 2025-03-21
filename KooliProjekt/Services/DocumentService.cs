@@ -34,7 +34,7 @@ namespace KooliProjekt.Services
 
         {
 
-            return await _context.Documents.FirstOrDefaultAsync(m => m.ID == id);
+            return await _context.Documents.FirstOrDefaultAsync(m => m.Id == id);
 
         }
 
@@ -42,7 +42,7 @@ namespace KooliProjekt.Services
 
         {
 
-            if (list.ID == 0)
+            if (list.Id == 0)
 
             {
 

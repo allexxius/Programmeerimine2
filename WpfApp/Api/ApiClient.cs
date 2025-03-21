@@ -37,7 +37,8 @@ namespace WpfApp.Api
             }
             else
             {
-                await _httpClient.PutAsJsonAsync("Doctors/" + list.Id, list);
+                var response = await _httpClient.PutAsJsonAsync("Doctors/" + list.Id, list);
+                var body = await response.Content.ReadAsStringAsync();
             }
         }
 

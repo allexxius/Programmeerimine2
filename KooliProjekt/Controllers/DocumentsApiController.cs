@@ -85,7 +85,7 @@ namespace KooliProjekt.Controllers
 
         {
 
-            if (id != list.ID)
+            if (id != list.Id)
 
             {
 
