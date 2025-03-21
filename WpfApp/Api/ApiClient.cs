@@ -28,7 +28,7 @@ namespace WpfApp.Api
 
             return result;
         }
-
+//.
         public async Task Save(Doctor list)
         {
             if(list.Id == 0)
