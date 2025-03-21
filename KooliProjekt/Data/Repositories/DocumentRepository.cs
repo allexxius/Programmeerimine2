@@ -26,7 +26,7 @@ namespace KooliProjekt.Data.Repositories
 
             return await DbContext.Set<Document>()
 
-                .OrderByDescending(x => x.ID)
+                .OrderByDescending(x => x.Id)
 
                 .GetPagedAsync(page, pageSize);
 
@@ -36,7 +36,7 @@ namespace KooliProjekt.Data.Repositories
 
         {
 
-            if (item.ID == 0)
+            if (item.Id == 0)
 
             {
 

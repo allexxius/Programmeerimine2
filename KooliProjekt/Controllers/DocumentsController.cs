@@ -33,7 +33,7 @@ namespace KooliProjekt.Controllers
             }
 
             var document = await _context.Documents
-                .FirstOrDefaultAsync(m => m.ID == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (document == null)
             {
                 return NotFound();
@@ -87,8 +87,8 @@ namespace KooliProjekt.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Type,File,Visit")] Document document)
         {
-            if (id != document.ID)
-            {
+            if (id != document.Id)
+           {
                 return NotFound();
             }
 
@@ -101,7 +101,7 @@ namespace KooliProjekt.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DocumentExists(document.ID))
+                    if (!DocumentExists(document.Id))
                     {
                         return NotFound();
                     }
@@ -124,7 +124,7 @@ namespace KooliProjekt.Controllers
             }
 
             var document = await _context.Documents
-                .FirstOrDefaultAsync(m => m.ID == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (document == null)
             {
                 return NotFound();
@@ -150,7 +150,7 @@ namespace KooliProjekt.Controllers
 
         private bool DocumentExists(int id)
         {
-            return _context.Documents.Any(e => e.ID == id);
+            return _context.Documents.Any(e => e.Id == id);
         }
     }
 }

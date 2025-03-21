@@ -41,7 +41,7 @@ namespace KooliProjekt.Tests.Services
         {
             // Arrange
             var documentId = 1;
-            var document = new Document { ID = documentId };
+            var document = new Document { Id = documentId };
             _documentRepositoryMock.Setup(repo => repo.Get(documentId)).ReturnsAsync(document);
 
             // Act
