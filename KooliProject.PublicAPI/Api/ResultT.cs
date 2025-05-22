@@ -1,4 +1,4 @@
-﻿namespace KooliProjekt.BlazorApp
+﻿namespace KooliProjekt.PublicAPI
 {
     public class Result<T> : Result
     {

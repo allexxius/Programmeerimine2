@@ -1,10 +1,13 @@
-﻿namespace KooliProjekt.BlazorApp
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace KooliProjekt.PublicAPI
 {
     public interface IApiClient
     {
-        Task<Result<TodoList>> Get(int id);
-        Task<Result<List<TodoList>>> List();
-        Task<Result> Save(TodoList list);
+        Task<Result<Doctor>> Get(int id);
+        Task<Result<List<Doctor>>> List();
+        Task<Result> Save(Doctor list);
         Task Delete(int id);
     }
 }

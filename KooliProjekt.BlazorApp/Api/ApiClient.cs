@@ -22,7 +22,7 @@ namespace KooliProjekt.BlazorApp
 
             try
             {
-                result.Value = await _httpClient.GetFromJsonAsync<List<Doctor>>("TodoLists");
+                result.Value = await _httpClient.GetFromJsonAsync<List<Doctor>>("Doctors");
             }
             catch (Exception ex)
             {
