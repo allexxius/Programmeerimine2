@@ -2,11 +2,17 @@
 
 using System.Collections.ObjectModel;
 
+using System.Net.Http;
+
+using System.Threading.Tasks;
+
 using System.Windows.Input;
 
 using WpfApp.Api;
 
-namespace WpfApp
+using WpfApp.Commands;
+
+namespace WpfApp.ViewModels
 
 {
 
@@ -14,187 +20,27 @@ namespace WpfApp
 
     {
 
-        public ObservableCollection<Doctor> Lists { get; private set; }
+        private readonly IApiClient _apiClient;
 
-        public ICommand NewCommand { get; private set; }
+        private Doctor _selectedItem;
 
-        public ICommand SaveCommand { get; private set; }
+        public ObservableCollection<Doctor> Lists { get; } = new ObservableCollection<Doctor>();
 
-        public ICommand DeleteCommand { get; private set; }
+        public ICommand NewCommand { get; }
+
+        public ICommand SaveCommand { get; }
+
+        public ICommand DeleteCommand { get; }
 
         public Predicate<Doctor> ConfirmDelete { get; set; }
 
         public Action<string> OnError { get; set; }
 
-        private readonly IApiClient _apiClient;
-
-        public MainWindowViewModel() : this(new ApiClient())
-
-        {
-
-        }
-
-        public MainWindowViewModel(IApiClient apiClient)
-
-        {
-
-            _apiClient = apiClient;
-
-            Lists = new ObservableCollection<Doctor>();
-
-            NewCommand = new RelayCommand<Doctor>(
-
-                // Execute
-
-                list =>
-
-                {
-
-                    SelectedItem = new Doctor();
-
-                }
-
-            );
-
-            SaveCommand = new RelayCommand<Doctor>(
-
-                // Execute
-
-                async list =>
-
-                {
-
-                    await SaveAsync();
-
-                },
-
-                // CanExecute
-
-                list =>
-
-                {
-
-                    return SelectedItem != null;
-
-                }
-
-            );
-
-            DeleteCommand = new RelayCommand<Doctor>(
-
-                // Execute
-
-                async list =>
-
-                {
-
-                    await DeleteAsync();
-
-                },
-
-                // CanExecute
-
-                list =>
-
-                {
-
-                    return SelectedItem != null;
-
-                }
-
-            );
-
-        }
-
-        public async Task Load()
-
-        {
-
-            Lists.Clear();
-
-            var lists = await _apiClient.List();
-
-            if (lists.HasError)
-
-            {
-
-                if (OnError != null)
-
-                {
-
-                    OnError(lists.Error);
-
-                }
-
-                return;
-
-            }
-
-            foreach (var list in lists.Value)
-
-            {
-
-                Lists.Add(list);
-
-            }
-
-        }
-
-        public async Task DeleteAsync()
-
-        {
-
-            if (SelectedItem == null) return;
-
-            if (ConfirmDelete != null)
-
-            {
-
-                var result = ConfirmDelete(SelectedItem);
-
-                if (!result)
-
-                {
-
-                    return;
-
-                }
-
-            }
-
-            await _apiClient.Delete(SelectedItem.Id);
-
-            Lists.Remove(SelectedItem);
-
-            SelectedItem = null;
-
-        }
-
-        public async Task SaveAsync()
-
-        {
-
-            if (SelectedItem == null) return;
-
-            await _apiClient.Save(SelectedItem);
-
-            await Load();
-
-        }
-
-        private Doctor _selectedItem;
-
         public Doctor SelectedItem
 
         {
 
-            get
-
-            {
-
-                return _selectedItem;
-
-            }
+            get => _selectedItem;
 
             set
 
@@ -204,7 +50,119 @@ namespace WpfApp
 
                 NotifyPropertyChanged();
 
+                CommandManager.InvalidateRequerySuggested();
+
             }
+
+        }
+
+        public MainWindowViewModel(IApiClient apiClient)
+
+        {
+
+            _apiClient = apiClient;
+
+            NewCommand = new RelayCommand(_ => New());
+
+            SaveCommand = new RelayCommand(async _ => await SaveAsync(), _ => CanSave());
+
+            DeleteCommand = new RelayCommand(async _ => await DeleteAsync(), _ => CanDelete());
+
+        }
+
+        public MainWindowViewModel() : this(new ApiClient(new HttpClient())) { }
+
+        public async Task Load()
+
+        {
+
+            var result = await _apiClient.List();
+
+            if (result.HasError)
+
+            {
+
+                OnError?.Invoke(result.Error);
+
+                return;
+
+            }
+
+            Lists.Clear();
+
+            foreach (var doctor in result.Value)
+
+            {
+
+                Lists.Add(doctor);
+
+            }
+
+        }
+
+        private void New()
+
+        {
+
+            SelectedItem = new Doctor { Id = 0 };
+
+        }
+
+        private bool CanSave() => SelectedItem != null;
+
+        private bool CanDelete() => SelectedItem != null;
+
+        public async Task SaveAsync()
+
+        {
+
+            if (SelectedItem == null) return;
+
+            var result = await _apiClient.Save(SelectedItem);
+
+            if (result.HasError)
+
+            {
+
+                OnError?.Invoke(result.Error);
+
+                return;
+
+            }
+
+            await Load();
+
+        }
+
+        public async Task DeleteAsync()
+
+        {
+
+            if (SelectedItem == null) return;
+
+            if (ConfirmDelete != null && !ConfirmDelete(SelectedItem))
+
+            {
+
+                return;
+
+            }
+
+            var result = await _apiClient.Delete(SelectedItem.Id);
+
+            if (result.HasError)
+
+            {
+
+                OnError?.Invoke(result.Error);
+
+                return;
+
+            }
+
+            Lists.Remove(SelectedItem);
+
+            SelectedItem = null;
 
         }
 

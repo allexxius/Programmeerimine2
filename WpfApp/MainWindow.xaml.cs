@@ -19,6 +19,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using WpfApp.Api;
+using WpfApp.ViewModels;
 
 namespace WpfApp;
 

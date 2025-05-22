@@ -15,6 +15,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 using System.Reflection;
+using WpfApp.ViewModels;
 
 namespace WpfApp.UnitTests
 
