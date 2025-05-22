@@ -1,10 +1,10 @@
-﻿namespace WpfApp.Api
+﻿// IApiClient.cs
+namespace WpfApp.Api
 {
     public interface IApiClient
     {
         Task<Result<List<Doctor>>> List();
-        Task Save(Doctor list);
-        Task Delete(int id);
-
+        Task<Result> Save(Doctor doctor);
+        Task<Result> Delete(int id);
     }
 }

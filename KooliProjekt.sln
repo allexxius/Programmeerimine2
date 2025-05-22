@@ -9,7 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KooliProjekt.UnitTests", "K
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KooliProjekt.IntegrationTests", "KooliProjekt.IntegrationTests\KooliProjekt.IntegrationTests.csproj", "{3A7D9D29-425C-86E8-EECE-B666CE7CD094}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp", "WpfApp\WpfApp.csproj", "{A8659BB5-C44E-40BE-ADF4-B1CD37365911}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfApp", "WpfApp\WpfApp.csproj", "{A8659BB5-C44E-40BE-ADF4-B1CD37365911}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfApp.UnitTests", "WpfApp.UnitTests\WpfApp.UnitTests.csproj", "{522D5587-91B0-479E-8C70-56D2FDCDCAAF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KooliProjekt.WinFormsApp", "..\..\OneDrive\Desktop\KooliProjekt.WinFormsApp\KooliProjekt.WinFormsApp.csproj", "{9736F87C-4FAF-4320-894F-074E1EE914DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{A8659BB5-C44E-40BE-ADF4-B1CD37365911}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8659BB5-C44E-40BE-ADF4-B1CD37365911}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8659BB5-C44E-40BE-ADF4-B1CD37365911}.Release|Any CPU.Build.0 = Release|Any CPU
+		{522D5587-91B0-479E-8C70-56D2FDCDCAAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{522D5587-91B0-479E-8C70-56D2FDCDCAAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{522D5587-91B0-479E-8C70-56D2FDCDCAAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{522D5587-91B0-479E-8C70-56D2FDCDCAAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9736F87C-4FAF-4320-894F-074E1EE914DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9736F87C-4FAF-4320-894F-074E1EE914DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9736F87C-4FAF-4320-894F-074E1EE914DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9736F87C-4FAF-4320-894F-074E1EE914DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

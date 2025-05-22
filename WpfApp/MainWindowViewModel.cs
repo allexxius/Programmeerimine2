@@ -1,4 +1,5 @@
-﻿using WpfApp;
+﻿using System;
+
 using System.Collections.ObjectModel;
 
 using System.Windows.Input;
@@ -63,9 +64,7 @@ namespace WpfApp
 
                 {
 
-                    await _apiClient.Save(SelectedItem);
-
-                    await Load();
+                    await SaveAsync();
 
                 },
 
@@ -89,27 +88,7 @@ namespace WpfApp
 
                 {
 
-                    if (ConfirmDelete != null)
-
-                    {
-
-                        var result = ConfirmDelete(SelectedItem);
-
-                        if (!result)
-
-                        {
-
-                            return;
-
-                        }
-
-                    }
-
-                    await _apiClient.Delete(SelectedItem.Id);
-
-                    Lists.Remove(SelectedItem);
-
-                    SelectedItem = null;
+                    await DeleteAsync();
 
                 },
 
@@ -161,6 +140,48 @@ namespace WpfApp
 
         }
 
+        public async Task DeleteAsync()
+
+        {
+
+            if (SelectedItem == null) return;
+
+            if (ConfirmDelete != null)
+
+            {
+
+                var result = ConfirmDelete(SelectedItem);
+
+                if (!result)
+
+                {
+
+                    return;
+
+                }
+
+            }
+
+            await _apiClient.Delete(SelectedItem.Id);
+
+            Lists.Remove(SelectedItem);
+
+            SelectedItem = null;
+
+        }
+
+        public async Task SaveAsync()
+
+        {
+
+            if (SelectedItem == null) return;
+
+            await _apiClient.Save(SelectedItem);
+
+            await Load();
+
+        }
+
         private Doctor _selectedItem;
 
         public Doctor SelectedItem
@@ -190,4 +211,3 @@ namespace WpfApp
     }
 
 }
-

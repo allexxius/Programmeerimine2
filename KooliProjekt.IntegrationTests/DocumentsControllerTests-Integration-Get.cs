@@ -59,7 +59,7 @@ namespace KooliProjekt.IntegrationTests
             _context.SaveChanges();
 
             // Act
-            using var response = await _client.GetAsync($"/Documents/Details/{document.ID}");
+            using var response = await _client.GetAsync($"/Documents/Details/{document.Id}");
 
             // Assert
             response.EnsureSuccessStatusCode();
