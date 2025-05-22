@@ -53,7 +53,7 @@ namespace KooliProjekt
 
 
             builder.Services.AddScoped<ApplicationDbContext>();
-
+            builder.Services.AddCors();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -81,6 +81,11 @@ namespace KooliProjekt
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
+            app.UseCors(
+       options => options.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+);
 
             app.UseRouting();
 

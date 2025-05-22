@@ -1,4 +1,7 @@
-﻿namespace KooliProjekt.BlazorApp
+﻿using System.Collections.Generic;
+
+namespace KooliProjekt.PublicAPI
+
 
 {
 

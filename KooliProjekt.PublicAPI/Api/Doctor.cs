@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace KooliProjekt.BlazorApp
+namespace KooliProjekt.PublicAPI
+
 
 {
 

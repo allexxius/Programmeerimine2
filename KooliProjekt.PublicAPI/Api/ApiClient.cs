@@ -8,7 +8,8 @@ using System.Net.Http.Json;
 
 using System.Threading.Tasks;
 
-namespace KooliProjekt.BlazorApp
+namespace KooliProjekt.PublicAPI
+
 
 {
 
@@ -38,7 +39,7 @@ namespace KooliProjekt.BlazorApp
 
             {
 
-                result.Value = await _httpClient.GetFromJsonAsync<List<Doctor>>("TodoLists");
+                result.Value = await _httpClient.GetFromJsonAsync<List<Doctor>>("Doctors");
 
             }
 
