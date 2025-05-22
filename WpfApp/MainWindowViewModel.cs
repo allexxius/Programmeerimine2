@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using WpfApp.Api;
+using KooliProjekt.PublicAPI;
 using WpfApp.Commands;
 
 namespace WpfApp.ViewModels
@@ -46,9 +44,9 @@ namespace WpfApp.ViewModels
         public async Task Load()
         {
             var result = await _apiClient.List();
-            if (result.HasError)
+            if (result.HasErrors)
             {
-                OnError?.Invoke(result.Error);
+                OnError?.Invoke(result.Errors.First().Value.First());
                 return;
             }
 
@@ -72,9 +70,9 @@ namespace WpfApp.ViewModels
             if (SelectedItem == null) return;
 
             var result = await _apiClient.Save(SelectedItem);
-            if (result.HasError)
+            if (result.HasErrors)
             {
-                OnError?.Invoke(result.Error);
+                OnError?.Invoke(result.Errors.First().Value.First());
                 return;
             }
 
@@ -91,9 +89,9 @@ namespace WpfApp.ViewModels
             }
 
             var result = await _apiClient.Delete(SelectedItem.Id);
-            if (result.HasError)
+            if (result.HasErrors)
             {
-                OnError?.Invoke(result.Error);
+                OnError?.Invoke(result.Errors.First().Value.First());
                 return;
             }
 

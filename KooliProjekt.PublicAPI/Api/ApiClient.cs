@@ -91,12 +91,22 @@ namespace KooliProjekt.PublicAPI
 
         }
 
-        public async Task Delete(int id)
+        public async Task<Result> Delete(int id)
 
         {
 
-            await _httpClient.DeleteAsync("Doctors/" + id);
+            var response = await _httpClient.DeleteAsync("Doctors/" + id);
+            if (!response.IsSuccessStatusCode)
 
+            {
+
+                var result = await response.Content.ReadFromJsonAsync<Result>();
+
+                return result;
+
+            }
+
+            return new Result();
         }
 
         public async Task<Result<Doctor>> Get(int id)

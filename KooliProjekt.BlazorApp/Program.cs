@@ -4,6 +4,12 @@ using Microsoft.AspNetCore.Components.Web;
 
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
+using System;
+
+using System.Net.Http;
+
+using System.Threading.Tasks;
+
 namespace KooliProjekt.BlazorApp
 
 {
@@ -22,7 +28,7 @@ namespace KooliProjekt.BlazorApp
 
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            // HttpClient, mis kasutab sinu API aadressi
+            // HttpClient, mis saadab päringuid sinu API aadressile
 
             builder.Services.AddScoped(sp => new HttpClient
 
@@ -32,7 +38,7 @@ namespace KooliProjekt.BlazorApp
 
             });
 
-            // ApiClient teenuse registreerimine
+            // ApiClient teenusena (kasutab HttpClientit, kui konstruktoris nõutakse)
 
             builder.Services.AddScoped<IApiClient, ApiClient>();
 

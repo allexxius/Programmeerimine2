@@ -1,14 +1,7 @@
-using KooliProjekt.WinFormsApp.Api;
-
+using KooliProjekt.PublicAPI;
 using Moq;
 
-using System.Collections.Generic;
-
-using System.Threading.Tasks;
-
 using System.Windows.Forms;
-
-using Xunit;
 
 namespace KooliProjekt.WinFormsApp.Tests
 
@@ -84,7 +77,8 @@ namespace KooliProjekt.WinFormsApp.Tests
 
             // Arrange
 
-            var errorResult = new Result<List<Doctor>> { Error = "API Error" };
+            var errorResult = new Result<List<Doctor>>();
+            errorResult.AddError("_FORM", "API Error");
 
             _mockApiClient.Setup(x => x.List()).ReturnsAsync(errorResult);
 

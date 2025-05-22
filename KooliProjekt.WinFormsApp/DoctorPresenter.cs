@@ -1,6 +1,4 @@
-﻿using KooliProjekt.WinFormsApp.Api;
-
-using System.Threading.Tasks;
+﻿using KooliProjekt.PublicAPI;
 
 namespace KooliProjekt.WinFormsApp
 
@@ -38,11 +36,11 @@ namespace KooliProjekt.WinFormsApp
 
             var response = await _apiClient.List();
 
-            if (response.HasError)
+            if (response.HasErrors)
 
             {
 
-                _view.ShowMessage($"Error loading doctors: {response.Error}", "Error",
+                _view.ShowMessage($"Error loading doctors: {response.Errors.First().Value.First()}", "Error",
 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -76,11 +74,11 @@ namespace KooliProjekt.WinFormsApp
 
                 var result = await _apiClient.Delete(_view.Id);
 
-                if (result.HasError)
+                if (result.HasErrors)
 
                 {
 
-                    _view.ShowMessage($"Error deleting doctor: {result.Error}", "Error",
+                    _view.ShowMessage($"Error deleting doctor: {result.Errors.First().Value}", "Error",
 
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -134,11 +132,11 @@ namespace KooliProjekt.WinFormsApp
 
             var result = await _apiClient.Save(doctor);
 
-            if (result.HasError)
+            if (result.HasErrors)
 
             {
 
-                _view.ShowMessage($"Error saving doctor: {result.Error}", "Error",
+                _view.ShowMessage($"Error saving doctor: {result.Errors.First().Value}", "Error",
 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
 

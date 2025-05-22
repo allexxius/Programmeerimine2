@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Moq;
 using Xunit;
-using WpfApp.Api;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Reflection;
 using WpfApp.ViewModels;
+using KooliProjekt.PublicAPI;
 
 namespace WpfApp.UnitTests
 {
@@ -83,8 +83,10 @@ namespace WpfApp.UnitTests
         public async Task Load_FailedApiCall_InvokesOnError()
         {
             var errorMessage = "API Error";
+            var result = new Result<List<Doctor>>();
+            result.AddError("_FORM", errorMessage);
             _mockApiClient.Setup(x => x.List())
-                         .ReturnsAsync(new Result<List<Doctor>> { Error = errorMessage });
+                         .ReturnsAsync(result);
 
             string receivedError = null;
             _viewModel.OnError = (error) => receivedError = error;

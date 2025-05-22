@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\KooliProjekt.PublicAPI\KooliProjekt.PublicAPI.csproj" />
     <ProjectReference Include="..\KooliProjekt.WinFormsApp\KooliProjekt.WinFormsApp.csproj" />
   </ItemGroup>
 

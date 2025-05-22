@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace KooliProjekt.WinFormsApp
+﻿namespace KooliProjekt.WinFormsApp
 
 {
 

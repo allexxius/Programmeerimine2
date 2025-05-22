@@ -1,8 +1,4 @@
-using KooliProjekt.WinFormsApp.Api;
-
-using System.Collections.Generic;
-
-using System.Windows.Forms;
+using KooliProjekt.PublicAPI;
 
 namespace KooliProjekt.WinFormsApp
 
@@ -22,7 +18,7 @@ namespace KooliProjekt.WinFormsApp
 
             InitializeComponent();
 
-            _presenter = new DoctorPresenter(this, new ApiClient());
+            _presenter = new DoctorPresenter(this, new ApiClient(new HttpClient()));
 
             InitializeDataGridView();
 
