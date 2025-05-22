@@ -14,4 +14,3 @@ namespace KooliProjekt.PublicAPI
         public string Specialization { get; set; }
     }
 }
-    

@@ -20,6 +20,9 @@ namespace KooliProjekt.PublicAPI
             }
         }
 
+        public bool HasError { get; set; }
+        public string Error { get; set; }
+
         public void AddError(string propertyName, string errorMessage)
         {
             if (!Errors.ContainsKey(propertyName))

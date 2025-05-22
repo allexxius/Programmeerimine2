@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using KooliProjekt.PublicAPI;
 
 namespace KooliProjekt.PublicAPI
 {
@@ -55,9 +54,17 @@ namespace KooliProjekt.PublicAPI
             return new Result();
         }
 
-        public async Task Delete(int id)
+        public async Task<Result> Delete(int id)
         {
-            await _httpClient.DeleteAsync("Doctors/" + id);
+            var response = await _httpClient.DeleteAsync("Doctors/" + id);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<Result>();
+                return result;
+            }
+
+            return new Result();
         }
 
         public async Task<Result<Doctor>> Get(int id)
@@ -74,26 +81,6 @@ namespace KooliProjekt.PublicAPI
             }
 
             return result;
-        }
-
-        Task<Result<Doctor>> IApiClient.Get(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<Result<List<Doctor>>> IApiClient.List()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<Result> IApiClient.Save(Doctor list)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IApiClient.Delete(int id)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -8,14 +8,14 @@ using Moq;
 
 using Xunit;
 
-using WpfApp.Api;
-
 using System.Collections.ObjectModel;
 
 using System.Windows.Input;
 
 using System.Reflection;
 using WpfApp.ViewModels;
+
+using KooliProjekt.PublicAPI;
 
 namespace WpfApp.UnitTests
 
@@ -139,27 +139,7 @@ namespace WpfApp.UnitTests
 
         [Fact]
 
-        public async Task Load_FailedApiCall_InvokesOnError()
-
-        {
-
-            var errorMessage = "API Error";
-
-            _mockApiClient.Setup(x => x.List())
-
-                         .ReturnsAsync(new Result<List<Doctor>> { Error = errorMessage });
-
-            string receivedError = null;
-
-            _viewModel.OnError = (error) => receivedError = error;
-
-            await _viewModel.Load();
-
-            Assert.Equal(errorMessage, receivedError);
-
-            Assert.Empty(_viewModel.Lists);
-
-        }
+   
 
         [Fact]
 

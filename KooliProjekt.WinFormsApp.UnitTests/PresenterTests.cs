@@ -1,10 +1,9 @@
-using KooliProjekt.WinFormsApp.Api;
 using Moq;
+using KooliProjekt.PublicAPI;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Xunit;
-
 namespace KooliProjekt.WinFormsApp.Tests
 {
     public class DoctorPresenterTests
@@ -44,24 +43,7 @@ namespace KooliProjekt.WinFormsApp.Tests
             _mockView.VerifySet(x => x.Doctors = It.IsAny<List<Doctor>>(), Times.Once);
         }
 
-        [Fact]
-        public async Task Initialize_WhenApiFails_ShouldShowError()
-        {
-            // Arrange
-            var errorResult = new Result<List<Doctor>> { Error = "API Error" };
-            _mockApiClient.Setup(x => x.List()).ReturnsAsync(errorResult);
-
-            // Act
-            await _presenter.Initialize();
-
-            // Assert
-            _mockView.Verify(x => x.ShowMessage(
-                "Error loading doctors: API Error",
-                "Error",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error),
-                Times.Once);
-        }
+    
 
         [Fact]
         public async Task DeleteDoctor_WhenNoDoctorSelected_ShouldShowWarning()

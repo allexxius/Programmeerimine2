@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace KooliProject.PublicAPI
+﻿namespace KooliProject.PublicAPI
 {
     public class Class1
     {

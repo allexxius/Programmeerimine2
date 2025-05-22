@@ -1,15 +1,7 @@
-﻿using System;
-
+﻿using KooliProjekt.PublicAPI;
 using System.Collections.ObjectModel;
-
 using System.Net.Http;
-
-using System.Threading.Tasks;
-
 using System.Windows.Input;
-
-using WpfApp.Api;
-
 using WpfApp.Commands;
 
 namespace WpfApp.ViewModels
