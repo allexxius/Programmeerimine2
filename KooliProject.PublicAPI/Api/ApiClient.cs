@@ -10,19 +10,19 @@ namespace KooliProjekt.BlazorApp
     {
         private readonly HttpClient _httpClient;
 
-        // Konstruktor, mis kasutab DI kaudu antud HttpClienti
-        public ApiClient(HttpClient httpClient)
+        public ApiClient()
         {
-            _httpClient = httpClient;
+            _httpClient = new HttpClient();
+            _httpClient.BaseAddress = new Uri("https://localhost:7136/api/");
         }
 
-        public async Task<Result<List<Doctor>>> List()
+        public async Task<Result<List<TodoList>>> List()
         {
-            var result = new Result<List<Doctor>>();
+            var result = new Result<List<TodoList>>();
 
             try
             {
-                result.Value = await _httpClient.GetFromJsonAsync<List<Doctor>>("TodoLists");
+                result.Value = await _httpClient.GetFromJsonAsync<List<TodoList>>("TodoLists");
             }
             catch (Exception ex)
             {
@@ -32,20 +32,20 @@ namespace KooliProjekt.BlazorApp
             return result;
         }
 
-        public async Task<Result> Save(Doctor list)
+        public async Task<Result> Save(TodoList list)
         {
             HttpResponseMessage response;
 
-            if (list.Id == 0)
+            if(list.Id == 0)
             {
-                response = await _httpClient.PostAsJsonAsync("Doctors", list);
+                response = await _httpClient.PostAsJsonAsync("TodoLists", list);
             }
             else
             {
-                response = await _httpClient.PutAsJsonAsync("Doctors/" + list.Id, list);
+                response = await _httpClient.PutAsJsonAsync("TodoLists/" + list.Id, list);
             }
 
-            if (!response.IsSuccessStatusCode)
+            if(!response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<Result>();
                 return result;
@@ -56,16 +56,16 @@ namespace KooliProjekt.BlazorApp
 
         public async Task Delete(int id)
         {
-            await _httpClient.DeleteAsync("Doctors/" + id);
+            await _httpClient.DeleteAsync("TodoLists/" + id);
         }
 
-        public async Task<Result<Doctor>> Get(int id)
+        public async Task<Result<TodoList>> Get(int id)
         {
-            var result = new Result<Doctor>();
+            var result = new Result<TodoList>();
 
             try
             {
-                result.Value = await _httpClient.GetFromJsonAsync<Doctor>("Doctors/" + id);
+                result.Value = await _httpClient.GetFromJsonAsync<TodoList>("TodoLists/" + id);
             }
             catch (Exception ex)
             {

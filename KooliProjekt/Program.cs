@@ -1,5 +1,6 @@
 using KooliProjekt.Data;
 using KooliProjekt.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 // a
@@ -36,7 +37,7 @@ namespace KooliProjekt
       
 
             builder.Services.AddScoped<ApplicationDbContext>();
-
+            builder.Services.AddCors();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -53,7 +54,11 @@ namespace KooliProjekt
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseCors(
+                options => options.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    );
             app.UseRouting();
 
             app.UseAuthentication();

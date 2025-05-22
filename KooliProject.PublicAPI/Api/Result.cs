@@ -4,13 +4,12 @@
     {
         public Dictionary<string, List<string>> Errors { get; set; }
 
-        public Result()
-        {
+        public Result() 
+        { 
             Errors = new Dictionary<string, List<string>>();
         }
 
-        // Parandatud nimi: HasErrors (varem HasError)
-        public bool HasErrors
+        public bool HasError
         {
             get
             {
@@ -20,7 +19,7 @@
 
         public void AddError(string propertyName, string errorMessage)
         {
-            if (!Errors.ContainsKey(propertyName))
+            if(!Errors.ContainsKey(propertyName))
             {
                 Errors.Add(propertyName, new List<string>());
             }
