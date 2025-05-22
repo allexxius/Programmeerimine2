@@ -13,9 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfApp", "WpfApp\WpfApp.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfApp.UnitTests", "WpfApp.UnitTests\WpfApp.UnitTests.csproj", "{522D5587-91B0-479E-8C70-56D2FDCDCAAF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KooliProjekt.WinFormsApp", "..\..\OneDrive\Desktop\KooliProjekt.WinFormsApp\KooliProjekt.WinFormsApp.csproj", "{9736F87C-4FAF-4320-894F-074E1EE914DE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.WinFormsApp.UnitTests", "KooliProjekt.WinFormsApp.UnitTests\KooliProjekt.WinFormsApp.UnitTests.csproj", "{3634F19B-021E-4797-BBF2-4350FA3DD2C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KooliProjekt.BlazorApp", "KooliProjekt.BlazorApp\KooliProjekt.BlazorApp.csproj", "{422C0399-AC64-451F-9D76-100853A470CE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KooliProjekt.WinFormsApp", "..\..\OneDrive\Desktop\KooliProjekt.WinFormsApp\KooliProjekt.WinFormsApp.csproj", "{BBAA1BEC-0D9A-4255-92E3-DB21FA927FBF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,14 +45,18 @@ Global
 		{522D5587-91B0-479E-8C70-56D2FDCDCAAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{522D5587-91B0-479E-8C70-56D2FDCDCAAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{522D5587-91B0-479E-8C70-56D2FDCDCAAF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9736F87C-4FAF-4320-894F-074E1EE914DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9736F87C-4FAF-4320-894F-074E1EE914DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9736F87C-4FAF-4320-894F-074E1EE914DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9736F87C-4FAF-4320-894F-074E1EE914DE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3634F19B-021E-4797-BBF2-4350FA3DD2C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3634F19B-021E-4797-BBF2-4350FA3DD2C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3634F19B-021E-4797-BBF2-4350FA3DD2C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3634F19B-021E-4797-BBF2-4350FA3DD2C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{422C0399-AC64-451F-9D76-100853A470CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{422C0399-AC64-451F-9D76-100853A470CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{422C0399-AC64-451F-9D76-100853A470CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{422C0399-AC64-451F-9D76-100853A470CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBAA1BEC-0D9A-4255-92E3-DB21FA927FBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBAA1BEC-0D9A-4255-92E3-DB21FA927FBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBAA1BEC-0D9A-4255-92E3-DB21FA927FBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBAA1BEC-0D9A-4255-92E3-DB21FA927FBF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
