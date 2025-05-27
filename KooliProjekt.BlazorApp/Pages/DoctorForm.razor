@@ -1,0 +1,81 @@
+﻿@page "/doctorform/{Id:int?}"
+@inject IApiClient ApiClient
+@inject NavigationManager NavigationManager
+
+<h3>@(doctor.Id == 0 ? "Lisa uus arst" : "Muuda arsti")</h3>
+
+<EditForm EditContext="@editContext" OnValidSubmit="@SaveDoctor">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-2">
+        <label>Tiitel:</label>
+        <InputText @bind-Value="doctor.Title" class="form-control" />
+        <ValidationMessage For="@(() => doctor.Title)" />
+    </div>
+
+    <div class="mb-2">
+        <label>Nimi:</label>
+        <InputText @bind-Value="doctor.Name" class="form-control" />
+        <ValidationMessage For="@(() => doctor.Name)" />
+    </div>
+
+    <div class="mb-3">
+        <label>Eriala:</label>
+        <InputText @bind-Value="doctor.Specialization" class="form-control" />
+        <ValidationMessage For="@(() => doctor.Specialization)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvesta</button>
+</EditForm>
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private Doctor doctor = new();
+    private EditContext editContext;
+    private ValidationMessageStore messageStore;
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(doctor);
+        messageStore = new ValidationMessageStore(editContext);
+
+        if (Id.HasValue)
+        {
+            var result = await ApiClient.Get(Id.Value);
+            if (!result.HasErrors)
+            {
+                doctor = result.Value;
+                editContext = new EditContext(doctor); // rebind
+                messageStore = new ValidationMessageStore(editContext);
+            }
+        }
+    }
+
+    private async Task SaveDoctor()
+    {
+        messageStore.Clear(); // Clear old messages
+
+        var result = await ApiClient.Save(doctor);
+
+        if (!result.HasErrors)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            // Show server-side validation errors
+            foreach (var error in result.Errors)
+            {
+                // "_" means general error, map to form-level
+                if (error.Key == "_")
+                    messageStore.Add(editContext.Field(string.Empty), error.Value);
+                else
+                    messageStore.Add(editContext.Field(error.Key), error.Value);
+            }
+
+            editContext.NotifyValidationStateChanged();
+        }
+    }
+}

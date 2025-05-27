@@ -38,7 +38,7 @@ namespace KooliProjekt.BlazorApp
 
             {
 
-                result.Value = await _httpClient.GetFromJsonAsync<List<Doctor>>("TodoLists");
+                result.Value = await _httpClient.GetFromJsonAsync<List<Doctor>>("Doctors");
 
             }
 
