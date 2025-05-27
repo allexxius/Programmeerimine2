@@ -1,0 +1,52 @@
+﻿@page "/doctorform/{Id:int?}"
+@inject IApiClient ApiClient
+@inject NavigationManager NavigationManager
+
+<h3>@(doctor.Id == 0 ? "Lisa uus arst" : "Muuda arsti")</h3>
+
+<EditForm Model="@doctor" OnValidSubmit="@SaveDoctor">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Tiitel:</label>
+        <InputText @bind-Value="doctor.Title" class="form-control" />
+    </div>
+
+    <div>
+        <label>Nimi:</label>
+        <InputText @bind-Value="doctor.Name" class="form-control" />
+    </div>
+
+    <div>
+        <label>Eriala:</label>
+        <InputText @bind-Value="doctor.Specialization" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvesta</button>
+</EditForm>
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private Doctor doctor = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id.HasValue)
+        {
+            var result = await ApiClient.Get(Id.Value);
+            if (!result.HasErrors)
+                doctor = result.Value;
+        }
+    }
+
+    private async Task SaveDoctor()
+    {
+        var result = await ApiClient.Save(doctor);
+        if (!result.HasErrors)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}
