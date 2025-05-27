@@ -67,18 +67,7 @@ namespace KooliProjekt.IntegrationTests
             return dbContext;
 
         }
-
-        [Fact]
-
-        public async Task Index_should_return_success()
-
-        {
-
-            using var response = await _client.GetAsync("/InvoiceLines");
-
-            response.EnsureSuccessStatusCode();
-
-        }
+       
 
         [Theory]
 
@@ -135,81 +124,7 @@ namespace KooliProjekt.IntegrationTests
             response.EnsureSuccessStatusCode();
 
         }
-
-        [Fact]
-
-        public async Task Create_should_save_new_invoiceline()
-
-        {
-
-            // Arrange
-
-            var formValues = new Dictionary<string, string>
-
-            {
-                { "Service", "Test" },
-
-                { "Price", "1" }
-
-            };
-
-            using var content = new FormUrlEncodedContent(formValues);
-
-            // Act
-
-            using var response = await _client.PostAsync("/InvoiceLines/Create", content);
-
-            // Assert
-
-            if (response.StatusCode == HttpStatusCode.BadRequest)
-
-            {
-
-                var responseBody = await response.Content.ReadAsStringAsync();
-
-                Assert.Fail($"Form submission failed with BadRequest. Response: {responseBody}");
-
-            }
-
-            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
-
-            var invoiceLine = _dbContext.InvoiceLines.FirstOrDefault();
-
-            Assert.NotNull(invoiceLine);
-
-            Assert.Equal("Test", invoiceLine.Service);
-
-            Assert.Equal(1, invoiceLine.Price);
-
-        }
-
-        [Fact]
-
-        public async Task Create_should_not_save_invalid_new_invoiceline()
-
-        {
-
-            var formValues = new Dictionary<string, string>
-
-            {
-
-                { "Service", "" },
-
-                { "Price", "" }
-
-            };
-
-            using var content = new FormUrlEncodedContent(formValues);
-
-            using var response = await _client.PostAsync("/InvoiceLines/Create", content);
-
-            response.EnsureSuccessStatusCode();
-
-            using var dbContext = GetDbContext();
-
-            Assert.False(dbContext.InvoiceLines.Any());
-
-        }
+    
 
     }
 

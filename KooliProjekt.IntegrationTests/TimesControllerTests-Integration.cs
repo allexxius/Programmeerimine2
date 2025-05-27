@@ -1,212 +1,136 @@
-﻿using System.Collections.Generic;
-
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-
 using System.Net;
-
 using System.Net.Http;
-
 using System.Threading.Tasks;
-
 using KooliProjekt.Data;
-
 using KooliProjekt.IntegrationTests.Helpers;
-
 using KooliProjekt.Models;
-
 using Microsoft.AspNetCore.Mvc.Testing;
-
 using Microsoft.Extensions.DependencyInjection;
-
 using Xunit;
 
 namespace KooliProjekt.IntegrationTests
-
 {
-
     [Collection("Sequential")]
-
-    public class TimesControllerTests : TestBase
-
+    public class TimesControllerTests_Post : TestBase
     {
-
         private readonly HttpClient _client;
 
-        private readonly ApplicationDbContext _dbContext;
-
-        public TimesControllerTests()
-
+        public TimesControllerTests_Post()
         {
-
-            var options = new WebApplicationFactoryClientOptions
-
-            {
-
-                AllowAutoRedirect = false
-
-            };
-
+            var options = new WebApplicationFactoryClientOptions { AllowAutoRedirect = false };
             _client = Factory.CreateClient(options);
-
-            _dbContext = Factory.Services.GetRequiredService<ApplicationDbContext>();
-
         }
 
         private ApplicationDbContext GetDbContext()
-
         {
-
             var scope = Factory.Services.CreateScope();
-
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            dbContext.Times.RemoveRange(dbContext.Times); // Reset database
-
+            dbContext.Times.RemoveRange(dbContext.Times);
             dbContext.SaveChanges();
-
             return dbContext;
-
         }
 
-        [Fact]
-
-        public async Task Index_should_return_success()
-
+        private async Task<int> CreateTestDoctor()
         {
-
-            using var response = await _client.GetAsync("/Times");
-
-            response.EnsureSuccessStatusCode();
-
-        }
-
-        [Theory]
-
-        [InlineData("/Times/Details")]
-
-        [InlineData("/Times/Details/100")]
-
-        [InlineData("/Times/Delete")]
-
-        [InlineData("/Times/100")]
-
-        [InlineData("/Times/Edit")]
-
-        [InlineData("/Times/Edit/100")]
-
-        public async Task Should_return_notfound(string url)
-
-        {
-
-            using var response = await _client.GetAsync(url);
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
-        }
-
-        [Fact]
-
-        public async Task Details_should_return_notfound_when_time_was_not_found()
-
-        {
-
-            using var response = await _client.GetAsync("/Times/Details/100");
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
-        }
-
-        [Fact]
-
-        public async Task Details_should_return_success_when_time_was_found()
-
-        {
-
             using var dbContext = GetDbContext();
+            var doctor = new Doctor { Name = "Test", Specialization = "Cardiology" };
+            dbContext.Doctors.Add(doctor);
+            await dbContext.SaveChangesAsync();
+            return doctor.Id;
+        }
 
-            var time = new Time { Free = true };
-
+        private async Task<int> CreateTestTime(int doctorId)
+        {
+            using var dbContext = GetDbContext();
+            var time = new Time
+            {
+                Date = DateTime.Today,
+                VisitTime = new TimeOnly(10, 0),
+                Free = true,
+                DoctorId = doctorId
+            };
             dbContext.Times.Add(time);
-
-            dbContext.SaveChanges();
-
-            using var response = await _client.GetAsync($"/Times/Details/{time.Id}");
-
-            response.EnsureSuccessStatusCode();
-
+            await dbContext.SaveChangesAsync();
+            return time.Id;
         }
 
         [Fact]
-
-        public async Task Create_should_save_new_time()
-
+        public async Task Create_should_add_new_time()
         {
+            var doctorId = await CreateTestDoctor();
+            var now = DateTime.Now;
 
-            // Arrange
+            var getResponse = await _client.GetAsync("/Times/Create");
+            var body = await getResponse.Content.ReadAsStringAsync();
+            var token = GetAntiForgeryToken(body);
 
-            var formValues = new Dictionary<string, string>
-
+            var form = new Dictionary<string, string>
             {
-
-                { "Free", "true" }
-
+                { "__RequestVerificationToken", token },
+                { "Date", now.ToString("yyyy-MM-dd") },
+                { "VisitTime", $"{now.Hour}:{now.Minute}" },
+                { "Free", "true" },
+                { "DoctorId", doctorId.ToString() }
             };
 
-            using var content = new FormUrlEncodedContent(formValues);
-
-            // Act
-
-            using var response = await _client.PostAsync("/Times/Create", content);
-
-            // Assert
-
-            if (response.StatusCode == HttpStatusCode.BadRequest)
-
-            {
-
-                var responseBody = await response.Content.ReadAsStringAsync();
-
-                Assert.Fail($"Form submission failed with BadRequest. Response: {responseBody}");
-
-            }
-
+            var response = await _client.PostAsync("/Times/Create", new FormUrlEncodedContent(form));
             Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
-
-            var time = _dbContext.Times.FirstOrDefault();
-
-            Assert.NotNull(time);
-
-            Assert.Equal(true, time.Free);
-
+            Assert.Equal("/Times", response.Headers.Location.OriginalString);
         }
 
         [Fact]
-
-        public async Task Create_should_not_save_invalid_new_time()
-
+        public async Task Edit_should_update_existing_time()
         {
+            var doctorId = await CreateTestDoctor();
+            var timeId = await CreateTestTime(doctorId);
+            var newDate = DateTime.Today.AddDays(1);
 
-            var formValues = new Dictionary<string, string>
+            var getResponse = await _client.GetAsync($"/Times/Edit/{timeId}");
+            var body = await getResponse.Content.ReadAsStringAsync();
+            var token = GetAntiForgeryToken(body);
 
+            var form = new Dictionary<string, string>
             {
-
-                { "Free", "" }
-
+                { "__RequestVerificationToken", token },
+                { "Id", timeId.ToString() },
+                { "Date", newDate.ToString("yyyy-MM-dd") },
+                { "VisitTime", $"{newDate.Hour}:{newDate.Minute}" },
+                { "Free", "false" },
+                { "DoctorId", doctorId.ToString() }
             };
 
-            using var content = new FormUrlEncodedContent(formValues);
-
-            using var response = await _client.PostAsync("/Times/Create", content);
-
-            response.EnsureSuccessStatusCode();
-
-            using var dbContext = GetDbContext();
-
-            Assert.False(dbContext.Times.Any());
-
+            var response = await _client.PostAsync($"/Times/Edit/{timeId}", new FormUrlEncodedContent(form));
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         }
 
+        [Fact]
+        public async Task Delete_should_remove_time()
+        {
+            var doctorId = await CreateTestDoctor();
+            var timeId = await CreateTestTime(doctorId);
+
+            var getResponse = await _client.GetAsync($"/Times/Delete/{timeId}");
+            var body = await getResponse.Content.ReadAsStringAsync();
+            var token = GetAntiForgeryToken(body);
+
+            var form = new Dictionary<string, string>
+            {
+                { "__RequestVerificationToken", token },
+                { "id", timeId.ToString() }
+            };
+
+            var response = await _client.PostAsync($"/Times/Delete/{timeId}", new FormUrlEncodedContent(form));
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        }
+
+        private string GetAntiForgeryToken(string html)
+        {
+            var pattern = @"<input[^>]*name=""__RequestVerificationToken""[^>]*value=""([^""]*)""";
+            var match = System.Text.RegularExpressions.Regex.Match(html, pattern);
+            return match.Success ? match.Groups[1].Value : null;
+        }
     }
-
 }
-

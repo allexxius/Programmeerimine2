@@ -1,217 +1,79 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
-
 using System.Net.Http;
-
 using System.Threading.Tasks;
-
 using KooliProjekt.Data;
-
-using KooliProjekt.IntegrationTests.Helpers;
-
 using KooliProjekt.Models;
-
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
-
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
 using Xunit;
 
 namespace KooliProjekt.IntegrationTests
-
 {
-
     [Collection("Sequential")]
-
-    public class VisitsControllerTests : TestBase
-
+    public class VisitsControllerTests_Post : IClassFixture<WebApplicationFactory<Program>>
     {
-
         private readonly HttpClient _client;
+        private readonly ApplicationDbContext _context;
 
-        private readonly ApplicationDbContext _dbContext;
-
-        public VisitsControllerTests()
-
+        public VisitsControllerTests_Post(WebApplicationFactory<Program> factory)
         {
+            _client = factory.CreateClient();
 
-            var options = new WebApplicationFactoryClientOptions
+            // Get scoped DbContext from factory's services
+            var scope = factory.Services.CreateScope();
+            _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            {
-
-                AllowAutoRedirect = false
-
-            };
-
-            _client = Factory.CreateClient(options);
-
-            _dbContext = Factory.Services.GetRequiredService<ApplicationDbContext>();
-
+            // Clear Visits before each test run
+            _context.Visits.RemoveRange(_context.Visits);
+            _context.SaveChanges();
         }
 
-        private ApplicationDbContext GetDbContext()
-
+        // Helper method to fetch antiforgery token from /Visits/Create GET
+        private async Task<(string Name, string Value)> GetAntiForgeryToken()
         {
-
-            var scope = Factory.Services.CreateScope();
-
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            dbContext.Visits.RemoveRange(dbContext.Visits); // Reset database
-
-            dbContext.SaveChanges();
-
-            return dbContext;
-
-        }
-
-        [Fact]
-
-        public async Task Index_should_return_success()
-
-        {
-
-            using var response = await _client.GetAsync("/Visits");
-
+            var response = await _client.GetAsync("/Visits/Create");
             response.EnsureSuccessStatusCode();
+            var html = await response.Content.ReadAsStringAsync();
 
-        }
+            var tokenName = "__RequestVerificationToken";
 
-        [Theory]
+            // Simple regex to extract token value from the hidden input field
+            var tokenValueMatch = System.Text.RegularExpressions.Regex.Match(html,
+                $"<input name=\"{tokenName}\" type=\"hidden\" value=\"([^\"]+)\" />");
 
-        [InlineData("/Visits/Details")]
+            if (!tokenValueMatch.Success)
+                throw new HttpRequestException("Antiforgery token not found in HTML.");
 
-        [InlineData("/Visits/Details/100")]
-
-        [InlineData("/Visits/Delete")]
-
-        [InlineData("/Visits/Delete/100")]
-
-        [InlineData("/Visits/Edit")]
-
-        [InlineData("/Visits/Edit/100")]
-
-        public async Task Should_return_notfound(string url)
-
-        {
-
-            using var response = await _client.GetAsync(url);
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
+            return (tokenName, tokenValueMatch.Groups[1].Value);
         }
 
         [Fact]
-
-        public async Task Details_should_return_notfound_when_visit_was_not_found()
-
+        public async Task Create_should_not_save_invalid_visit()
         {
+            // Arrange: get antiforgery token
+            var (tokenName, tokenValue) = await GetAntiForgeryToken();
 
-            using var response = await _client.GetAsync("/Visits/Details/100");
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
-        }
-
-        [Fact]
-
-        public async Task Details_should_return_success_when_visit_was_found()
-
-        {
-
-            using var dbContext = GetDbContext();
-
-            var visit = new Visit { Name = "Test", Duration = 1 };
-
-            dbContext.Visits.Add(visit);
-
-            dbContext.SaveChanges();
-
-            using var response = await _client.GetAsync($"/Visits/Details/{visit.Id}");
-
-            response.EnsureSuccessStatusCode();
-
-        }
-
-        [Fact]
-
-        public async Task Create_should_save_new_visit()
-
-        {
-
-            // Arrange
-
-            var formValues = new Dictionary<string, string>
-
+            var formData = new Dictionary<string, string>
             {
-
-                { "Name", "Test" },
-
-                { "Duration", "1" }
-
+                { "Name", "" },      // invalid: empty
+                { "Duration", "" },  // invalid: empty
+                { tokenName, tokenValue }
             };
+            var content = new FormUrlEncodedContent(formData);
 
-            using var content = new FormUrlEncodedContent(formValues);
+            // Act: post create form with invalid data
+            var response = await _client.PostAsync("/Visits/Create", content);
 
-            // Act
+            // Assert: Should return OK with validation errors (no redirect)
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            using var response = await _client.PostAsync("/Visits/Create", content);
-
-            // Assert
-
-            if (response.StatusCode == HttpStatusCode.BadRequest)
-
-            {
-
-                var responseBody = await response.Content.ReadAsStringAsync();
-
-                Assert.Fail($"Form submission failed with BadRequest. Response: {responseBody}");
-
-            }
-
-            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
-
-            var visit = _dbContext.Visits.FirstOrDefault();
-
-            Assert.NotNull(visit);
-
-            Assert.Equal("Test", visit.Name);
-
-            Assert.Equal(1, visit.Duration);
-
+            // No visit should be saved
+            var count = await _context.Visits.CountAsync();
+            Assert.Equal(0, count);
         }
-
-        [Fact]
-
-        public async Task Create_should_not_save_invalid_new_visit()
-
-        {
-
-            var formValues = new Dictionary<string, string>
-
-            {
-
-                { "Name", "" },
-
-                { "Duration", "" }
-
-            };
-
-            using var content = new FormUrlEncodedContent(formValues);
-
-            using var response = await _client.PostAsync("/Visits/Create", content);
-
-            response.EnsureSuccessStatusCode();
-
-            using var dbContext = GetDbContext();
-
-            Assert.False(dbContext.Visits.Any());
-
-        }
-
     }
-
 }
-

@@ -18,7 +18,7 @@ namespace KooliProjekt.IntegrationTests
 
     [Collection("Sequential")]
 
-    public class DocumentControllerTests : TestBase
+    public class DocumentControllerTests_Get : TestBase
 
     {
 
@@ -26,7 +26,7 @@ namespace KooliProjekt.IntegrationTests
 
         private readonly ApplicationDbContext _context;
 
-        public DocumentControllerTests()
+        public DocumentControllerTests_Get()
 
         {
 
