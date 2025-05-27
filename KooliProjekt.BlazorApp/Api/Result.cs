@@ -2,27 +2,15 @@
 {
     public class Result
     {
-        public Dictionary<string, List<string>> Errors { get; set; }
+        public Dictionary<string, List<string>> Errors { get; set; } = new();
 
-        public Result()
-        {
-            Errors = new Dictionary<string, List<string>>();
-        }
-
-        // Parandatud nimi: HasErrors (varem HasError)
-        public bool HasErrors
-        {
-            get
-            {
-                return Errors.Count > 0;
-            }
-        }
+        public bool HasErrors => Errors.Any();
 
         public void AddError(string propertyName, string errorMessage)
         {
             if (!Errors.ContainsKey(propertyName))
             {
-                Errors.Add(propertyName, new List<string>());
+                Errors[propertyName] = new List<string>();
             }
 
             Errors[propertyName].Add(errorMessage);
